@@ -107,15 +107,16 @@ public class Master extends SherlockFragmentActivity {
                     e.printStackTrace();
                 }
 
-                for (int j = 0; j < arrayOfLatestImage.size(); j++) {
-
-                    objAllBean = arrayOfLatestImage.get(j);
-
-                    allListImage.add(objAllBean.getImageurl());
-                    allArrayImage = allListImage.toArray(allArrayImage);
-
-                    allListImageCatName.add(objAllBean.getCategoryName());
-                    allArrayImageCatName = allListImageCatName.toArray(allArrayImageCatName);
+                for (int i = 0; i < 30; i++) {
+                    for (int j = 0; j < arrayOfLatestImage.size(); j++) {
+                        objAllBean = arrayOfLatestImage.get(j);
+                        allListImage.add(objAllBean.getImageurl());
+                        allListImageCatName.add(objAllBean.getCategoryName());
+                        allArrayImageCatName = allListImageCatName.toArray(allArrayImageCatName);
+                    }
+                    if(i == 29){
+                        allArrayImage = allListImage.toArray(allArrayImage);
+                    }
                 }
 
                 i_load_images.onFinishLoad(false);
