@@ -1,0 +1,4 @@
+/Users/Gantz/Desktop/DoApps/Wallpapers/app/build/intermediates/classes/debug
+/Users/Gantz/Desktop/DoApps/Wallpapers/app/build/intermediates/pre-dexed/debug/GoogleAdMobAdsSdk-6.4.1-5899ae89412ab6f79066acddafc8a3ce64bc8be4.jar
+/Users/Gantz/Desktop/DoApps/Wallpapers/app/build/intermediates/pre-dexed/debug/classes-0a7b68b1918e216af774450fd57f20ac613addb5.jar
+/Users/Gantz/Desktop/DoApps/Wallpapers/app/build/intermediates/pre-dexed/debug/support-v4-19.1.0-ffe48ec02db45a55eb6b4d572a65b22e200245b2.jar

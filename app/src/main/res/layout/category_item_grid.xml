@@ -1,0 +1,30 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" 
+    android:gravity="center"
+    android:id="@+id/rootlayout"
+    android:background="@color/grid_back_color">
+    
+     <GridView
+        android:id="@+id/category_grid"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:numColumns="auto_fit"
+       	android:stretchMode="columnWidth"
+    	android:background="#000000" 
+    	android:layout_above="@+id/adView"/>
+     
+     <com.google.ads.AdView android:id="@+id/adView"
+                         android:layout_width="fill_parent"
+                         android:layout_height="wrap_content"
+                         android:layout_gravity="center"
+                         ads:adUnitId="@string/admob_id"
+                         ads:adSize="BANNER"
+                         android:layout_alignParentBottom="true"
+                         ads:testDevices="TEST_EMULATOR, TEST_DEVICE_ID"
+                       	 ads:loadAdOnCreate="true"/>
+     
+     
+
+</RelativeLayout>
