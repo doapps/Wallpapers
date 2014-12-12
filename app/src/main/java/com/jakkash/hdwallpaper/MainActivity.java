@@ -35,7 +35,7 @@ public class MainActivity extends SherlockFragmentActivity implements ActionBar.
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //rgetSupportActionBar().hide();
+        //getSupportActionBar().hide();
         setContentView(R.layout.activity_main);
       
         viewPager = (ViewPager) findViewById(R.id.pager);
