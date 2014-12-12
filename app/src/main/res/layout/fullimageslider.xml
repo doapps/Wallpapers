@@ -1,24 +1,23 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
-    
-    <android.support.v4.view.ViewPager 
-   android:id="@+id/image_slider"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_above="@+id/adView">
+    android:layout_height="fill_parent">
 
-</android.support.v4.view.ViewPager>
+    <android.support.v4.view.ViewPager
+        android:id="@+id/image_slider"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/adView">
 
-    <com.google.ads.AdView android:id="@+id/adView"
-                         android:layout_width="fill_parent"
-                         android:layout_height="wrap_content"
-                         android:layout_gravity="center"
-                         ads:adUnitId="@string/admob_id"
-                         ads:adSize="BANNER"
-                         android:layout_alignParentBottom="true"
-                         ads:testDevices="TEST_EMULATOR, TEST_DEVICE_ID"
-                       	 ads:loadAdOnCreate="true"/>
+    </android.support.v4.view.ViewPager>
+
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/adView"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        ads:adUnitId="@string/admob_id"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="center"
+        ads:adSize="BANNER" />
 
 </RelativeLayout>

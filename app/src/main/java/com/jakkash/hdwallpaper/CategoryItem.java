@@ -26,8 +26,8 @@ import com.example.item.ItemCategory;
 import com.example.util.AlertDialogManager;
 import com.example.util.Constant;
 import com.example.util.JsonUtils;
-import com.google.ads.AdRequest;
-import com.google.ads.AdView;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
 public class CategoryItem extends SherlockActivity {
 	
@@ -53,7 +53,8 @@ public class CategoryItem extends SherlockActivity {
 		
 		  // Look up the AdView as a resource and load a request.
 	    AdView adView = (AdView)this.findViewById(R.id.adView);
-	    adView.loadAd(new AdRequest());
+        AdRequest adRequestb= new AdRequest.Builder().build();
+        adView.loadAd(adRequestb);
 		grid_cat_item=(GridView)findViewById(R.id.category_grid);
 		arrayOfCategoryImage=new ArrayList<ItemCategory>();
 		

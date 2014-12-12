@@ -44,8 +44,8 @@ import com.example.favorite.Pojo;
 import com.example.favorite.DatabaseHandler.DatabaseManager;
 import com.example.imageloader.ImageLoader;
 import com.example.util.Constant;
-import com.google.ads.AdRequest;
-import com.google.ads.AdView;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
 public class SlideImageActivity extends SherlockActivity implements SensorEventListener {
 
@@ -81,7 +81,8 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
 
         setTitle(Constant.CATEGORY_TITLE);
         AdView adView = (AdView) this.findViewById(R.id.adView);
-        adView.loadAd(new AdRequest());
+        AdRequest adRequestb= new AdRequest.Builder().build();
+        adView.loadAd(adRequestb);
         Intent i = getIntent();
         position = i.getIntExtra("POSITION_ID", 0);
         mAllImages = i.getStringArrayExtra("IMAGE_ARRAY");
@@ -520,6 +521,8 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
         private LayoutInflater inflater;
 
         public ImagePagerAdapter() {
+            // TODO Auto-generated constructor stub
+
             inflater = getLayoutInflater();
         }
 

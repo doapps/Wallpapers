@@ -16,18 +16,13 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.google.ads.Ad;
-import com.google.ads.AdListener;
-import com.google.ads.AdRequest;
-import com.google.ads.AdView;
-import com.google.ads.InterstitialAd;
-import com.google.ads.AdRequest.ErrorCode;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
 import com.jakkash.hdwallpaper.R.string;
+import com.google.android.gms.ads.AdRequest;
 import com.me.doapps.v2.Master;
 
-import java.util.ArrayList;
-
-public class MainActivity extends Master implements ActionBar.TabListener, AdListener {
+public class MainActivity extends Master implements ActionBar.TabListener {
 
     private String[] tabs = {"LATEST", "ALL PHOTOS", "MY FAVORITES"};
     private TabsPagerAdapter mAdapter;
@@ -39,14 +34,11 @@ public class MainActivity extends Master implements ActionBar.TabListener, AdLis
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //getSupportActionBar().hide();
         setContentView(R.layout.activity_main);
 
         viewPager = (ViewPager) findViewById(R.id.pager);
-
         getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-        getSupportActionBar().setDisplayShowHomeEnabled(false);
-
         mAdapter = new TabsPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(mAdapter);
 
@@ -65,6 +57,8 @@ public class MainActivity extends Master implements ActionBar.TabListener, AdLis
 
             @Override
             public void onPageSelected(int position) {
+                // on changing the page
+                // make respected tab selected
                 getSupportActionBar().setSelectedNavigationItem(position);
             }
 
@@ -78,18 +72,19 @@ public class MainActivity extends Master implements ActionBar.TabListener, AdLis
         });
 
         // Look up the AdView as a resource and load a request.
-        AdView adView = (AdView) this.findViewById(R.id.adView);
-        adView.loadAd(new AdRequest());
+        AdView adView = (AdView)findViewById(R.id.adView);
+        AdRequest adRequestb= new AdRequest.Builder().build();
+        adView.loadAd(adRequestb);
 
 
-        adRequest = new AdRequest();
-        interstitial = new InterstitialAd(MainActivity.this, "ca-app-pub-3827903678379919/7798751026");
-        this.interstitial.setAdListener(this);
+        interstitial = new InterstitialAd(this);
+        interstitial.setAdUnitId("ca-app-pub-8995045147204986/6753137354");
 
 
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             public void run() {
+                adRequest = new AdRequest.Builder().build();
                 interstitial.loadAd(adRequest);
             }
         }, 60000);
@@ -108,15 +103,14 @@ public class MainActivity extends Master implements ActionBar.TabListener, AdLis
     @Override
     public void onTabUnselected(Tab tab, FragmentTransaction transaction) {
     }
-    
-    /*
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-    	  MenuInflater inflater = getSupportMenuInflater();
-          inflater.inflate(R.menu.main, menu);
-          return super.onCreateOptionsMenu(menu);
+
+        MenuInflater inflater = getSupportMenuInflater();
+        inflater.inflate(R.menu.main, menu);
+        return super.onCreateOptionsMenu(menu);
     }
-    */
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -162,6 +156,7 @@ public class MainActivity extends Master implements ActionBar.TabListener, AdLis
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // TODO Auto-generated method stub
 
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             //you may open Interstitial Ads here
@@ -209,31 +204,9 @@ public class MainActivity extends Master implements ActionBar.TabListener, AdLis
 
     }
 
-
-    @Override
-    public void onDismissScreen(Ad arg0) {
-
+    public InterstitialAd getInterstitial() {
+        return interstitial;
     }
 
-    @Override
-    public void onFailedToReceiveAd(Ad arg0, ErrorCode arg1) {
 
-    }
-
-    @Override
-    public void onLeaveApplication(Ad arg0) {
-
-    }
-
-    @Override
-    public void onPresentScreen(Ad arg0) {
-
-    }
-
-    @Override
-    public void onReceiveAd(Ad arg0) {
-        if (interstitial.isReady()) {
-            interstitial.show();
-        }
-    }
 }
