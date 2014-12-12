@@ -29,162 +29,157 @@ import android.widget.GridView;
 import android.widget.Toast;
 
 public class LatestFragment extends Fragment {
-	
-	GridView grid;
-	List<ItemLatest> arrayOfLatestImage;
-	LatestGridAdapter objAdapter;
-	AlertDialogManager alert = new AlertDialogManager();
-	ArrayList<String> allListImage,allListImageCatName;
-	String[] allArrayImage,allArrayImageCatName;
-	
-	private ItemLatest objAllBean;
-	private int columnWidth;
-	JsonUtils util;
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+    GridView grid;
+    List<ItemLatest> arrayOfLatestImage;
+    LatestGridAdapter objAdapter;
+    AlertDialogManager alert = new AlertDialogManager();
+    ArrayList<String> allListImage, allListImageCatName;
+    String[] allArrayImage, allArrayImageCatName;
 
-		View rootView = inflater.inflate(R.layout.fragment_latest, container, false);
-		grid=(GridView)rootView.findViewById(R.id.latest_grid);
-		
-		arrayOfLatestImage=new ArrayList<ItemLatest>();
-		allListImage=new ArrayList<String>();
-		allListImageCatName=new ArrayList<String>();
-		
-		
-		allArrayImage=new String[allListImage.size()];
-		allArrayImageCatName=new String[allListImageCatName.size()];
-		
-		util=new JsonUtils(getActivity());
-		InitilizeGridLayout();
-		grid.setOnItemClickListener(new OnItemClickListener() {
+    private ItemLatest objAllBean;
+    private int columnWidth;
+    JsonUtils util;
 
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int position,
-					long arg3) {
-				// TODO Auto-generated method stub
-				
-				
-				Intent intslider=new Intent(getActivity(),SlideImageActivity.class);
-				intslider.putExtra("POSITION_ID", position);
-				intslider.putExtra("IMAGE_ARRAY", allArrayImage);
- 				intslider.putExtra("IMAGE_CATNAME", allArrayImageCatName);
-				
-				startActivity(intslider);
-				
-			}
-		});
-		if (JsonUtils.isNetworkAvailable(getActivity())) {
-			new MyTask().execute(Constant.LATEST_URL);
-		} else {
-			showToast("No Network Connection!!!");
-			 alert.showAlertDialog(getActivity(), "Internet Connection Error",
-	                    "Please connect to working Internet connection", false);
-		}
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
 
-		return rootView;
-	}
-	
-	private void InitilizeGridLayout() {
-		Resources r = getResources();
-		float padding = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-				Constant.GRID_PADDING, r.getDisplayMetrics());
+        View rootView = inflater.inflate(R.layout.fragment_latest, container, false);
+        grid = (GridView) rootView.findViewById(R.id.latest_grid);
 
-		columnWidth = (int) ((util.getScreenWidth() - ((Constant.NUM_OF_COLUMNS + 1) * padding)) / Constant.NUM_OF_COLUMNS);
+        arrayOfLatestImage = new ArrayList<ItemLatest>();
+        allListImage = new ArrayList<String>();
+        allListImageCatName = new ArrayList<String>();
 
-		grid.setNumColumns(Constant.NUM_OF_COLUMNS);
-		grid.setColumnWidth(columnWidth);
-		grid.setStretchMode(GridView.NO_STRETCH);
-		grid.setPadding((int) padding, (int) padding, (int) padding,
-				(int) padding);
-		grid.setHorizontalSpacing((int) padding);
-		grid.setVerticalSpacing((int) padding);
-	}
-private	class MyTask extends AsyncTask<String, Void, String> {
 
-		ProgressDialog pDialog;
+        allArrayImage = new String[allListImage.size()];
+        allArrayImageCatName = new String[allListImageCatName.size()];
 
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
+        util = new JsonUtils(getActivity());
+        InitilizeGridLayout();
 
-	//		pDialog = new ProgressDialog(getActivity());
-	//		pDialog.setMessage("Loading...");
-	//		pDialog.setCancelable(false);
-	//		pDialog.show();
-		}
+        grid.setOnItemClickListener(new OnItemClickListener() {
 
-		@Override
-		protected String doInBackground(String... params) {
-			return JsonUtils.getJSONString(params[0]);
-		}
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int position,
+                                    long arg3) {
+                Intent intslider = new Intent(getActivity(), SlideImageActivity.class);
+                intslider.putExtra("POSITION_ID", position);
+                intslider.putExtra("IMAGE_ARRAY", allArrayImage);
+                intslider.putExtra("IMAGE_CATNAME", allArrayImageCatName);
 
-		@Override
-		protected void onPostExecute(String result) {
-			super.onPostExecute(result);
+                startActivity(intslider);
+            }
+        });
+        if (JsonUtils.isNetworkAvailable(getActivity())) {
+            new MyTask().execute(Constant.LATEST_URL);
+        } else {
+            showToast("No Network Connection!!!");
+            alert.showAlertDialog(getActivity(), "Internet Connection Error",
+                    "Please connect to working Internet connection", false);
+        }
 
-			if (null != pDialog && pDialog.isShowing()) {
-				pDialog.dismiss();
-			}
+        return rootView;
+    }
 
-			if (null == result || result.length() == 0) {
-				showToast("Server Connection Error");
-				alert.showAlertDialog(getActivity(), "Server Connection Error",
-	                    "May Server Under Maintaines Or Low Network", false);
-				
-			} else {
+    private void InitilizeGridLayout() {
+        Resources r = getResources();
+        float padding = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                Constant.GRID_PADDING, r.getDisplayMetrics());
 
-				try {
-					JSONObject mainJson = new JSONObject(result);
-					JSONArray jsonArray = mainJson.getJSONArray(Constant.LATEST_ARRAY_NAME);
-					JSONObject objJson = null;
-					for (int i = 0; i < jsonArray.length(); i++) {
-						  objJson = jsonArray.getJSONObject(i);
+        columnWidth = (int) ((util.getScreenWidth() - ((Constant.NUM_OF_COLUMNS + 1) * padding)) / Constant.NUM_OF_COLUMNS);
 
-						ItemLatest objItem = new ItemLatest();
+        grid.setNumColumns(Constant.NUM_OF_COLUMNS);
+        grid.setColumnWidth(columnWidth);
+        grid.setStretchMode(GridView.NO_STRETCH);
+        grid.setPadding((int) padding, (int) padding, (int) padding,
+                (int) padding);
+        grid.setHorizontalSpacing((int) padding);
+        grid.setVerticalSpacing((int) padding);
+    }
 
-					
-						objItem.setCategoryName(objJson.getString(Constant.LATEST_IMAGE_CATEGORY_NAME));
-						objItem.setImageurl(objJson.getString(Constant.LATEST_IMAGE_URL));
-						
-						
-						arrayOfLatestImage.add(objItem);
-					 
+    private class MyTask extends AsyncTask<String, Void, String> {
 
-					}
-					 
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
-				for(int j=0;j<arrayOfLatestImage.size();j++)
-				{
-					 
-					objAllBean=arrayOfLatestImage.get(j);
-					
-					allListImage.add(objAllBean.getImageurl());
-					allArrayImage=allListImage.toArray(allArrayImage);
-					
-					allListImageCatName.add(objAllBean.getCategoryName());
-					allArrayImageCatName=allListImageCatName.toArray(allArrayImageCatName);
-					
-				}
+        ProgressDialog pDialog;
 
-  			setAdapterToListview();
-  		}
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
 
-		}
-	}
+            //		pDialog = new ProgressDialog(getActivity());
+            //		pDialog.setMessage("Loading...");
+            //		pDialog.setCancelable(false);
+            //		pDialog.show();
+        }
 
-	 
- 
-	public void setAdapterToListview() {
-		objAdapter = new LatestGridAdapter(getActivity(), R.layout.latest_grid_item,
-				arrayOfLatestImage,columnWidth);
-		grid.setAdapter(objAdapter);
-	}
+        @Override
+        protected String doInBackground(String... params) {
+            return JsonUtils.getJSONString(params[0]);
+        }
 
-	public void showToast(String msg) {
-		Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
-	}
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+            if (null != pDialog && pDialog.isShowing()) {
+                pDialog.dismiss();
+            }
+
+            if (null == result || result.length() == 0) {
+                showToast("Server Connection Error");
+                alert.showAlertDialog(getActivity(), "Server Connection Error",
+                        "May Server Under Maintaines Or Low Network", false);
+
+            } else {
+
+                try {
+                    JSONObject mainJson = new JSONObject(result);
+                    JSONArray jsonArray = mainJson.getJSONArray(Constant.LATEST_ARRAY_NAME);
+                    JSONObject objJson = null;
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        objJson = jsonArray.getJSONObject(i);
+
+                        ItemLatest objItem = new ItemLatest();
+
+
+                        objItem.setCategoryName(objJson.getString(Constant.LATEST_IMAGE_CATEGORY_NAME));
+                        objItem.setImageurl(objJson.getString(Constant.LATEST_IMAGE_URL));
+
+
+                        arrayOfLatestImage.add(objItem);
+
+
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                for (int j = 0; j < arrayOfLatestImage.size(); j++) {
+
+                    objAllBean = arrayOfLatestImage.get(j);
+
+                    allListImage.add(objAllBean.getImageurl());
+                    allArrayImage = allListImage.toArray(allArrayImage);
+
+                    allListImageCatName.add(objAllBean.getCategoryName());
+                    allArrayImageCatName = allListImageCatName.toArray(allArrayImageCatName);
+                }
+                setAdapterToListview();
+            }
+
+        }
+    }
+
+
+    public void setAdapterToListview() {
+        objAdapter = new LatestGridAdapter(getActivity(), R.layout.latest_grid_item,
+                arrayOfLatestImage, columnWidth);
+        grid.setAdapter(objAdapter);
+    }
+
+    public void showToast(String msg) {
+        Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
+    }
 }

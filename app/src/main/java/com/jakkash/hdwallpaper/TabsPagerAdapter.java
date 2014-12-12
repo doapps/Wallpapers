@@ -4,6 +4,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import com.me.doapps.v2.Slide_Image_Fragment_v2;
+
 public class TabsPagerAdapter extends FragmentPagerAdapter {
 
 	public TabsPagerAdapter(FragmentManager fm) {
@@ -16,7 +18,7 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
 		switch (index) {
 		case 0:
 			// Latest fragment activity
-			return new LatestFragment();
+			return new Slide_Image_Fragment_v2();
 		case 1:
 			// AllPhotos fragment activity
 			return new AllPhotosFragment();

@@ -1,16 +1,11 @@
-package com.jakkash.hdwallpaper;
+package com.me.doapps.v2;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.List;
-
-import android.graphics.Bitmap;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.WallpaperManager;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -36,18 +31,27 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.example.favorite.DatabaseHandler;
-import com.example.favorite.Pojo;
 import com.example.favorite.DatabaseHandler.DatabaseManager;
+import com.example.favorite.Pojo;
 import com.example.imageloader.ImageLoader;
 import com.example.util.Constant;
 import com.google.ads.AdRequest;
 import com.google.ads.AdView;
+import com.jakkash.hdwallpaper.MainActivity;
+import com.jakkash.hdwallpaper.R;
 
-public class SlideImageActivity extends SherlockActivity implements SensorEventListener {
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.List;
+
+public class Slide_Image_Fragment_v2 extends SherlockFragment implements SensorEventListener, Master.I_Load_Images {
 
     int position;
     String[] mAllImages, mAllImageCatName;
@@ -71,12 +75,36 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fullimageslider);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        db = new DatabaseHandler(getActivity());
+        dbManager = DatabaseManager.INSTANCE;
+        dbManager.init(getActivity());
+
+        ((Master) getActivity()).setI_load_images(this);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fullimageslider, container, false);
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        sensorManager = (SensorManager) getActivity().getSystemService(Activity.SENSOR_SERVICE);
+        lastUpdate = System.currentTimeMillis();
+    }
+
+    /*
         db = new DatabaseHandler(this);
         dbManager = DatabaseManager.INSTANCE;
-        dbManager.init(getApplicationContext());
+        dbManager.init(getActivity());
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         setTitle(Constant.CATEGORY_TITLE);
@@ -90,7 +118,7 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
 
         TOTAL_IMAGE = mAllImages.length - 1;
         viewpager = (ViewPager) findViewById(R.id.image_slider);
-        imageLoader = new ImageLoader(getApplicationContext());
+        imageLoader = new ImageLoader(getActivity());
         handler = new Handler();
 
 //		Log.e("lenth", ""+mAllImageId.length);
@@ -201,13 +229,8 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
                     Play_Flag = false;
                     ShowMenu();
                 } else {
-                /*
-        		 * when Play_Flag false then Play
-        		 * but when image is last not start auto play
-        		 * now hide all menu when auto play start
-        		 */
                     if (viewpager.getCurrentItem() == TOTAL_IMAGE) {
-                        Toast.makeText(getApplicationContext(), "Currently Last Image!! Not Start Auto Play", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "Currently Last Image!! Not Start Auto Play", Toast.LENGTH_SHORT).show();
                     } else {
                         AutoPlay();
                         menuItem.setIcon(getResources().getDrawable(R.drawable.stop));
@@ -262,6 +285,8 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
 
     }
 
+    */
+
     //add to favorite
 
     public void AddtoFav(int position) {
@@ -270,7 +295,7 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
         Image_Url = mAllImages[position];
 
         db.AddtoFavorite(new Pojo(Image_catName, Image_Url));
-        Toast.makeText(getApplicationContext(), "Added to Favorite", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), "Added to Favorite", Toast.LENGTH_SHORT).show();
         menu.getItem(3).setIcon(getResources().getDrawable(R.drawable.fav_hover));
     }
 
@@ -278,7 +303,7 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
     public void RemoveFav(int position) {
         Image_Url = mAllImages[position];
         db.RemoveFav(new Pojo(Image_Url));
-        Toast.makeText(getApplicationContext(), "Removed from Favorite", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), "Removed from Favorite", Toast.LENGTH_SHORT).show();
         menu.getItem(3).setIcon(getResources().getDrawable(R.drawable.fav));
 
     }
@@ -332,9 +357,9 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
         Bitmap mBitmap = viewpager.getDrawingCache();
 
         WallpaperManager myWallpaperManager = WallpaperManager
-                .getInstance(getApplicationContext());
+                .getInstance(getActivity());
         DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int height = displayMetrics.heightPixels;
         int width = displayMetrics.widthPixels << 1;
         int width1 = width / 2;
@@ -342,11 +367,9 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
         try {
             myWallpaperManager.setBitmap(mBitmap);
             myWallpaperManager.suggestDesiredDimensions(width1, height);
-            Toast.makeText(SlideImageActivity.this, "Wallpaper set",
-                    Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "Wallpaper set", Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
-            Toast.makeText(SlideImageActivity.this, "Error setting wallpaper",
-                    Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "Error setting wallpaper", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -364,11 +387,11 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
     }
 
     public void saveDialog() {
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
 
         alert.setTitle("Save file...");
         alert.setMessage("File name to save ");
-        final EditText input = new EditText(this);
+        final EditText input = new EditText(getActivity());
         input.setText("");
         alert.setView(input);
 
@@ -376,16 +399,16 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
             public void onClick(DialogInterface dialog, int whichButton) {
                 String fname = input.getText().toString();
                 if (fname.equalsIgnoreCase("")) {
-                    Toast.makeText(getApplicationContext(), "Please Enter File Name", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Please Enter File Name", Toast.LENGTH_SHORT).show();
                 } else {
                     String path = Environment.getExternalStorageDirectory().toString();
                     File f = new File(path, "Wallpaper/" + fname + ".jpg");
-                    Toast.makeText(getApplicationContext(), "Save Path:Sdcard/Wallpaper", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Save Path:Sdcard/Wallpaper", Toast.LENGTH_SHORT).show();
 
                     if (f.exists()) {
-                        SlideImageActivity.this.fileExistsConfirmationDialog(fname);
+                        fileExistsConfirmationDialog(fname);
                     } else {
-                        SlideImageActivity.this.saveToFile(fname);
+                        saveToFile(fname);
                     }
                 }
             }
@@ -401,14 +424,14 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
     }
 
     public void fileExistsConfirmationDialog(final String fname) {
-        AlertDialog.Builder alert = new AlertDialog.Builder(SlideImageActivity.this);
+        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
         alert.setTitle("Error");
         alert.setMessage("The file \"" + fname
                 + "\" already exists, do you wish to overwrite it?");
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                SlideImageActivity.this.saveToFile(fname);
+                saveToFile(fname);
             }
         });
 
@@ -470,7 +493,7 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
                 if (position == TOTAL_IMAGE) {
                     position = TOTAL_IMAGE;
                     handler.removeCallbacks(Update);//when last image play mode goes to Stop
-                    Toast.makeText(getApplicationContext(), "Last Image Auto Play Stoped", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Last Image Auto Play Stoped", Toast.LENGTH_SHORT).show();
                     menu.getItem(1).setIcon(getResources().getDrawable(R.drawable.play));
                     Play_Flag = false;
                     //Show All Menu when Auto Play Stop
@@ -520,7 +543,7 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
         private LayoutInflater inflater;
 
         public ImagePagerAdapter() {
-            inflater = getLayoutInflater();
+            inflater = getActivity().getLayoutInflater();
         }
 
         @Override
@@ -645,26 +668,24 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
         }
     }
 
-
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
         // register this class as a listener for the orientation and
         // accelerometer sensors
         if (dbManager == null) {
             dbManager = DatabaseManager.INSTANCE;
-            dbManager.init(getApplicationContext());
+            dbManager.init(getActivity());
         } else if (dbManager.isDatabaseClosed()) {
-            dbManager.init(getApplicationContext());
+            dbManager.init(getActivity());
         }
-        sensorManager.registerListener(this,
-                sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+        sensorManager.registerListener(this,sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
                 SensorManager.SENSOR_DELAY_NORMAL);
     }
 
+    /*
     @Override
-    protected void onPause() {
-        // unregister listener
+    public void onPause() {
         super.onPause();
         if (!dbManager.isDatabaseClosed())
             dbManager.closeDatabase();
@@ -677,7 +698,57 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
         handler.removeCallbacks(Update);
         sensorManager.unregisterListener(this);
         if (dbManager != null) dbManager.closeDatabase();
-
     }
+    */
 
+    @Override
+    public void onFinishLoad(boolean status) {
+        if (!status) {
+            /**
+             *
+             */
+            position = 0;
+            mAllImages = ((Master) getActivity()).getAllArrayImage();
+            mAllImageCatName = ((Master) getActivity()).getAllArrayImageCatName();
+            TOTAL_IMAGE = mAllImages.length - 1;
+
+            viewpager = (ViewPager) getView().findViewById(R.id.image_slider);
+            imageLoader = new ImageLoader(getActivity());
+            handler = new Handler();
+
+            /**
+             * ViewPager
+             */
+            ImagePagerAdapter adapter = new ImagePagerAdapter();
+            viewpager.setAdapter(adapter);
+            viewpager.setCurrentItem(position);
+
+            viewpager.setOnPageChangeListener(new OnPageChangeListener() {
+                @Override
+                public void onPageSelected(int position) {
+                    /*
+                    position = viewpager.getCurrentItem();
+                    Image_Url = mAllImages[position];
+
+                    List<Pojo> pojolist = db.getFavRow(Image_Url);
+                    if (pojolist.size() == 0) {
+                        menu.getItem(3).setIcon(getResources().getDrawable(R.drawable.fav));
+                    } else {
+                        if (pojolist.get(0).getImageurl().equals(Image_Url)) {
+                            menu.getItem(3).setIcon(getResources().getDrawable(R.drawable.fav_hover));
+                        }
+                    }
+                    */
+                }
+
+                @Override
+                public void onPageScrolled(int arg0, float arg1, int position) {
+                }
+
+                @Override
+                public void onPageScrollStateChanged(int position) {
+                }
+            });
+        }
+    }
 }
