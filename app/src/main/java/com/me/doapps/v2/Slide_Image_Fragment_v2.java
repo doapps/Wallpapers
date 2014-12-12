@@ -576,7 +576,7 @@ public class Slide_Image_Fragment_v2 extends SherlockFragment implements SensorE
             final ProgressBar bar = (ProgressBar) imageLayout.findViewById(R.id.progressBar1);
 
             String url = Constant.SERVER_IMAGE_UPFOLDER_CATEGORY + mAllImageCatName[position] + "/" + mAllImages[position];
-            Picasso.with(getSherlockActivity()).load(url).into(webview);
+            Picasso.with(getSherlockActivity()).load(url).fit().into(webview);
 
             container.addView(imageLayout, 0);
             return imageLayout;
@@ -719,11 +719,13 @@ public class Slide_Image_Fragment_v2 extends SherlockFragment implements SensorE
 
                 @Override
                 public void onPageScrolled(int arg0, float arg1, int position) {
+                    /*
                     int total = viewpager.getAdapter().getCount() - 1;
                     if(arg0 == total){
                         viewpager.setCurrentItem(0);
                     }
                     Log.e("PAGER",total + " - " + arg0);
+                    */
                 }
 
                 @Override
