@@ -42,8 +42,6 @@ public class Master extends SherlockFragmentActivity {
 
         allArrayImage = new String[allListImage.size()];
         allArrayImageCatName = new String[allListImageCatName.size()];
-
-        loadImages();
     }
 
     public String[] getAllArrayImage() {
@@ -54,7 +52,7 @@ public class Master extends SherlockFragmentActivity {
         return allArrayImageCatName;
     }
 
-    private void loadImages(){
+    public void loadImages(){
         if (JsonUtils.isNetworkAvailable(this)) {
             new MyTask().execute(Constant.LATEST_URL);
         } else {

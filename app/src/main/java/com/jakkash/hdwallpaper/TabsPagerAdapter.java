@@ -3,6 +3,9 @@ package com.jakkash.hdwallpaper;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.me.doapps.v2.Slide_Image_Fragment_v2;
 
@@ -36,4 +39,8 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
 		return 3;
 	}
 
+    @Override
+    public void destroyItem(ViewGroup container, int position, Object object) {
+        super.destroyItem(container,position,object);
+    }
 }
