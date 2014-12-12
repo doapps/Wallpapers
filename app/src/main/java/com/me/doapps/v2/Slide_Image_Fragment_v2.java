@@ -40,8 +40,6 @@ import com.example.favorite.DatabaseHandler.DatabaseManager;
 import com.example.favorite.Pojo;
 import com.example.imageloader.ImageLoader;
 import com.example.util.Constant;
-import com.google.ads.AdRequest;
-import com.google.ads.AdView;
 import com.jakkash.hdwallpaper.MainActivity;
 import com.jakkash.hdwallpaper.R;
 

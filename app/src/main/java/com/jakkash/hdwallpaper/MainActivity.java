@@ -28,7 +28,7 @@ public class MainActivity extends Master implements ActionBar.TabListener {
     private TabsPagerAdapter mAdapter;
     private ViewPager viewPager;
     ActionBar.Tab tab;
-    private InterstitialAd interstitial = null;
+    private InterstitialAd interstitial;
     AdRequest adRequest;
 
     @Override
@@ -79,13 +79,14 @@ public class MainActivity extends Master implements ActionBar.TabListener {
 
         interstitial = new InterstitialAd(this);
         interstitial.setAdUnitId("ca-app-pub-8995045147204986/6753137354");
+        adRequest = new AdRequest.Builder().build();
+        interstitial.loadAd(adRequest);
 
 
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             public void run() {
-                adRequest = new AdRequest.Builder().build();
-                interstitial.loadAd(adRequest);
+                interstitial.show();
             }
         }, 60000);
 
