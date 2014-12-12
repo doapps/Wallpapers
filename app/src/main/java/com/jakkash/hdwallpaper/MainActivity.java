@@ -38,7 +38,12 @@ public class MainActivity extends Master implements ActionBar.TabListener {
         setContentView(R.layout.activity_main);
 
         viewPager = (ViewPager) findViewById(R.id.pager);
+        viewPager.setOffscreenPageLimit(2);
+
         getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayShowHomeEnabled(false);
+
         mAdapter = new TabsPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(mAdapter);
 
@@ -105,6 +110,8 @@ public class MainActivity extends Master implements ActionBar.TabListener {
     public void onTabUnselected(Tab tab, FragmentTransaction transaction) {
     }
 
+    /*
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
@@ -112,6 +119,7 @@ public class MainActivity extends Master implements ActionBar.TabListener {
         inflater.inflate(R.menu.main, menu);
         return super.onCreateOptionsMenu(menu);
     }
+    */
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

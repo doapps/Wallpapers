@@ -42,6 +42,7 @@ import com.example.imageloader.ImageLoader;
 import com.example.util.Constant;
 import com.jakkash.hdwallpaper.MainActivity;
 import com.jakkash.hdwallpaper.R;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -74,6 +75,8 @@ public class Slide_Image_Fragment_v2 extends SherlockFragment implements SensorE
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ((Master) getActivity()).setI_load_images(this);
+        ((Master) getActivity()).loadImages();
     }
 
     @Override
@@ -83,8 +86,6 @@ public class Slide_Image_Fragment_v2 extends SherlockFragment implements SensorE
         db = new DatabaseHandler(getActivity());
         dbManager = DatabaseManager.INSTANCE;
         dbManager.init(getActivity());
-
-        ((Master) getActivity()).setI_load_images(this);
     }
 
     @Override
@@ -571,34 +572,11 @@ public class Slide_Image_Fragment_v2 extends SherlockFragment implements SensorE
             View imageLayout = inflater.inflate(R.layout.webview, container, false);
             assert imageLayout != null;
 
-            WebView webview = (WebView) imageLayout.findViewById(R.id.webView1);
+            ImageView webview = (ImageView) imageLayout.findViewById(R.id.webView1);
             final ProgressBar bar = (ProgressBar) imageLayout.findViewById(R.id.progressBar1);
 
-            WebSettings websettings = webview.getSettings();
-            websettings.setJavaScriptEnabled(true);
-            websettings.setDomStorageEnabled(true);
-            websettings.setCacheMode(1);
-            websettings.setAppCacheMaxSize(0x800000L);
-
-            webview.loadDataWithBaseURL(null, "<body style=margin:0;padding:0><img src=\"" + Constant.SERVER_IMAGE_UPFOLDER_CATEGORY + mAllImageCatName[position] + "/" + mAllImages[position] + "\"" + "alt=\"pageNo\" width=\"100%\" align=\"left\" height=\"100%\"></body>", "text/html", "UTF-8", null);
-            webview.capturePicture();
-
-            webview.setWebChromeClient(new WebChromeClient() {
-                @Override
-                public void onProgressChanged(WebView view, int newProgress) {
-                    // TODO Auto-generated method stub
-                    super.onProgressChanged(view, newProgress);
-
-                    if (newProgress == 100) {
-                        bar.setVisibility(View.GONE);
-                    } else {
-                        bar.setVisibility(View.VISIBLE);
-                    }
-
-                }
-
-
-            });
+            String url = Constant.SERVER_IMAGE_UPFOLDER_CATEGORY + mAllImageCatName[position] + "/" + mAllImages[position];
+            Picasso.with(getSherlockActivity()).load(url).into(webview);
 
             container.addView(imageLayout, 0);
             return imageLayout;
@@ -741,6 +719,11 @@ public class Slide_Image_Fragment_v2 extends SherlockFragment implements SensorE
 
                 @Override
                 public void onPageScrolled(int arg0, float arg1, int position) {
+                    int total = viewpager.getAdapter().getCount() - 1;
+                    if(arg0 == total){
+                        viewpager.setCurrentItem(0);
+                    }
+                    Log.e("PAGER",total + " - " + arg0);
                 }
 
                 @Override
