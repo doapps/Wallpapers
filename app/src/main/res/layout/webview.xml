@@ -10,8 +10,7 @@
         android:layout_alignParentLeft="true"
         android:adjustViewBounds="true"
         android:scaleType="centerInside"
-        android:src="@drawable/my_progress_indeterminate"
-         />
+        android:src="@drawable/my_progress_indeterminate" />
 
     <ProgressBar
         android:id="@+id/progressBar1"

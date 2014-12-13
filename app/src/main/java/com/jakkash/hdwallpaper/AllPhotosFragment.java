@@ -49,7 +49,29 @@ public class AllPhotosFragment extends Fragment {
 
 		View rootView = inflater.inflate(R.layout.fragment_allphotos, container, false);
 		lsv_allphotos=(ListView)rootView.findViewById(R.id.lsv_allphotos);
+
+        if (JsonUtils.isNetworkAvailable(getActivity())) {
+            new MyTask().execute(Constant.CATEGORY_URL);
+        } else {
+            showToast("No Network Connection!!!");
+            alert.showAlertDialog(getActivity(), "Internet Connection Error",
+                    "Please connect to working Internet connection", false);
+        }
+
+        if (JsonUtils.isNetworkAvailable(getActivity())) {
+            new MyTask_().execute(Constant.CATEGORY_ITEM_URL+Constant.CATEGORY_ID);
+        } else {
+            showToast("No Network Connection!!!");
+            alert.showAlertDialog(getActivity(), "Internet Connection Error",
+                    "Please connect to working Internet connection", false);
+        }
+
 		arrayOfAllphotos=new ArrayList<ItemAllPhotos>();
+        arrayOfCategoryImage=new ArrayList<ItemCategory>();
+        allListImage=new ArrayList<String>();
+        allListImageCatName=new ArrayList<String>();
+        allArrayImage=new String[allListImage.size()];
+        allArrayImageCatName=new String[allListImageCatName.size()];
 
 		lsv_allphotos.setOnItemClickListener(new OnItemClickListener() {
 
@@ -68,7 +90,7 @@ public class AllPhotosFragment extends Fragment {
 
                 /**agregado**/
                 Intent intslider=new Intent(getActivity(),SlideImageActivity.class);
-                intslider.putExtra("POSITION_ID", 0);
+                intslider.putExtra("POSITION_ID", position);
                 intslider.putExtra("IMAGE_ARRAY", allArrayImage);
                 intslider.putExtra("IMAGE_CATNAME", allArrayImageCatName);
 
@@ -201,10 +223,7 @@ public class AllPhotosFragment extends Fragment {
                         objItem.setCategoryName(objJson.getString(Constant.CATEGORY_ITEM_CATNAME));
                         objItem.setImageurl(objJson.getString(Constant.CATEGORY_ITEM_IMAGEURL));
 
-
-
                         arrayOfCategoryImage.add(objItem);
-
 
                     }
 
@@ -215,7 +234,7 @@ public class AllPhotosFragment extends Fragment {
 
                 for(int j=0;j<arrayOfCategoryImage.size();j++)
                 {
-
+                    Log.e("arrayOfCAtegory","entre");
 
                     ItemCategory objCategoryBean=arrayOfCategoryImage.get(j);
 
