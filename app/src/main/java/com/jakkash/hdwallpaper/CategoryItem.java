@@ -51,7 +51,7 @@ public class CategoryItem extends SherlockActivity {
 		setTitle(Constant.CATEGORY_TITLE);
 		
 		
-		  // Look up the AdView as a resource and load a request.
+		// Look up the AdView as a resource and load a request.
 	    AdView adView = (AdView)this.findViewById(R.id.adView);
         AdRequest adRequestb= new AdRequest.Builder().build();
         adView.loadAd(adRequestb);

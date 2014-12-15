@@ -10,6 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.example.adapter.AllPhotosListAdapter;
+import com.example.adapter.CategoryItemGridAdapter;
 import com.example.item.ItemAllPhotos;
 import com.example.item.ItemCategory;
 import com.example.util.AlertDialogManager;
@@ -50,21 +51,6 @@ public class AllPhotosFragment extends Fragment {
 		View rootView = inflater.inflate(R.layout.fragment_allphotos, container, false);
 		lsv_allphotos=(ListView)rootView.findViewById(R.id.lsv_allphotos);
 
-        if (JsonUtils.isNetworkAvailable(getActivity())) {
-            new MyTask().execute(Constant.CATEGORY_URL);
-        } else {
-            showToast("No Network Connection!!!");
-            alert.showAlertDialog(getActivity(), "Internet Connection Error",
-                    "Please connect to working Internet connection", false);
-        }
-
-        if (JsonUtils.isNetworkAvailable(getActivity())) {
-            new MyTask_().execute(Constant.CATEGORY_ITEM_URL+Constant.CATEGORY_ID);
-        } else {
-            showToast("No Network Connection!!!");
-            alert.showAlertDialog(getActivity(), "Internet Connection Error",
-                    "Please connect to working Internet connection", false);
-        }
 
 		arrayOfAllphotos=new ArrayList<ItemAllPhotos>();
         arrayOfCategoryImage=new ArrayList<ItemCategory>();
@@ -73,48 +59,45 @@ public class AllPhotosFragment extends Fragment {
         allArrayImage=new String[allListImage.size()];
         allArrayImageCatName=new String[allListImageCatName.size()];
 
-		lsv_allphotos.setOnItemClickListener(new OnItemClickListener() {
-
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int position,
-					long arg3) {
-
-				/*objAllBean=arrayOfAllphotos.get(position);
-				int Catid=objAllBean.getCategoryId();
-				Constant.CATEGORY_ID=objAllBean.getCategoryId();
-				Log.e("cat_id",""+Catid);
-				Constant.CATEGORY_TITLE=objAllBean.getCategoryName();
-
-				Intent intcat=new Intent(getActivity(),CategoryItem.class);
-				startActivity(intcat);*/
-
-                /**agregado**/
-                Intent intslider=new Intent(getActivity(),SlideImageActivity.class);
-                intslider.putExtra("POSITION_ID", position);
-                intslider.putExtra("IMAGE_ARRAY", allArrayImage);
-                intslider.putExtra("IMAGE_CATNAME", allArrayImageCatName);
-
-                startActivity(intslider);
-
-			}
-		});
-
-
-		if (JsonUtils.isNetworkAvailable(getActivity())) {
-			new MyTask().execute(Constant.CATEGORY_URL);
-		} else {
-			showToast("No Network Connection!!!");
-			 alert.showAlertDialog(getActivity(), "Internet Connection Error",
-	                    "Please connect to working Internet connection", false);
-		}
 
         if (JsonUtils.isNetworkAvailable(getActivity())) {
-            new MyTask_().execute(Constant.CATEGORY_ITEM_URL+Constant.CATEGORY_ID);
+            new MyTask().execute(Constant.CATEGORY_URL);
         } else {
             showToast("No Network Connection!!!");
             alert.showAlertDialog(getActivity(), "Internet Connection Error",
                     "Please connect to working Internet connection", false);
         }
+
+
+
+        lsv_allphotos.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int position,
+					long arg3) {
+
+				objAllBean=arrayOfAllphotos.get(position);
+				int Catid=objAllBean.getCategoryId();
+				Constant.CATEGORY_ID=objAllBean.getCategoryId();
+				Log.e("cat_id",""+Catid);
+				Constant.CATEGORY_TITLE=objAllBean.getCategoryName();
+
+				/*Intent intcat=new Intent(getActivity(),CategoryItem.class);
+				startActivity(intcat);*/
+
+                /**agregado**/
+                if (JsonUtils.isNetworkAvailable(getActivity())) {
+                    new MyTask_().execute(Constant.CATEGORY_ITEM_URL+Constant.CATEGORY_ID);
+                } else {
+                    showToast("No Network Connection!!!");
+                    alert.showAlertDialog(getActivity(), "Internet Connection Error",
+                            "Please connect to working Internet connection", false);
+                }
+
+
+			}
+		});
+
 
 		return rootView;
 	}
@@ -186,10 +169,10 @@ public class AllPhotosFragment extends Fragment {
         protected void onPreExecute() {
             super.onPreExecute();
 
-            //pDialog = new ProgressDialog(CategoryItem.this);
-            //pDialog.setMessage("Loading...");
-            //	pDialog.setCancelable(false);
-            //	pDialog.show();
+            pDialog = new ProgressDialog(getActivity());
+            pDialog.setMessage("Loading...");
+            pDialog.setCancelable(false);
+            pDialog.show();
         }
 
         @Override
@@ -248,7 +231,14 @@ public class AllPhotosFragment extends Fragment {
 
 
 
-                setAdapterToListview();
+                setAdapterToListview_();
+
+                Intent intslider=new Intent(getActivity(),SlideImageActivity.class);
+                intslider.putExtra("POSITION_ID", 0);
+                intslider.putExtra("IMAGE_ARRAY", allArrayImage);
+                intslider.putExtra("IMAGE_CATNAME", allArrayImageCatName);
+                pDialog.dismiss();
+                startActivity(intslider);
             }
 
         }
@@ -263,4 +253,12 @@ public class AllPhotosFragment extends Fragment {
 	public void showToast(String msg) {
 		Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
 	}
+
+    public void setAdapterToListview_() {
+        /*objAdapter = new CategoryItemGridAdapter(CategoryItem.this, R.layout.latest_grid_item,
+                arrayOfCategoryImage,columnWidth);
+        grid_cat_item.setAdapter(objAdapter);*/
+
+
+    }
 }
