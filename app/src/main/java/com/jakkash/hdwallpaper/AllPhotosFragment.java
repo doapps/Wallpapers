@@ -80,6 +80,7 @@ public class AllPhotosFragment extends Fragment {
 				int Catid=objAllBean.getCategoryId();
 				Constant.CATEGORY_ID=objAllBean.getCategoryId();
 				Log.e("cat_id",""+Catid);
+                Log.e("CATEGORY_ID",""+Constant.CATEGORY_ID);
 				Constant.CATEGORY_TITLE=objAllBean.getCategoryName();
 
 				/*Intent intcat=new Intent(getActivity(),CategoryItem.class);
@@ -93,8 +94,6 @@ public class AllPhotosFragment extends Fragment {
                     alert.showAlertDialog(getActivity(), "Internet Connection Error",
                             "Please connect to working Internet connection", false);
                 }
-
-
 			}
 		});
 
@@ -220,7 +219,7 @@ public class AllPhotosFragment extends Fragment {
                     Log.e("arrayOfCAtegory","entre");
 
                     ItemCategory objCategoryBean=arrayOfCategoryImage.get(j);
-
+                    Log.e("image_url", objCategoryBean.getImageurl());
                     allListImage.add(objCategoryBean.getImageurl());
                     allArrayImage=allListImage.toArray(allArrayImage);
 

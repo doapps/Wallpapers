@@ -5,9 +5,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.KeyEvent;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -16,11 +18,14 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.example.dialogs.Dialog_Rate;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.jakkash.hdwallpaper.R.string;
 import com.google.android.gms.ads.AdRequest;
 import com.me.doapps.v2.Master;
+
+import java.io.File;
 
 public class MainActivity extends Master implements ActionBar.TabListener {
 
@@ -77,13 +82,13 @@ public class MainActivity extends Master implements ActionBar.TabListener {
         });
 
         // Look up the AdView as a resource and load a request.
-        AdView adView = (AdView)findViewById(R.id.adView);
-        AdRequest adRequestb= new AdRequest.Builder().build();
+        AdView adView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequestb = new AdRequest.Builder().build();
         adView.loadAd(adRequestb);
 
 
         interstitial = new InterstitialAd(this);
-        interstitial.setAdUnitId("ca-app-pub-8995045147204986/6753137354");
+        interstitial.setAdUnitId(getResources().getString(string.admob_interstitial));
         adRequest = new AdRequest.Builder().build();
         interstitial.loadAd(adRequest);
 
@@ -126,15 +131,11 @@ public class MainActivity extends Master implements ActionBar.TabListener {
 
         switch (item.getItemId()) {
             case R.id.menu_about:
-
                 Intent about = new Intent(getApplicationContext(), AboutActivity.class);
                 startActivity(about);
-
                 return true;
-
             case R.id.menu_overflow:
                 return true;
-
             case R.id.menu_moreapp:
 
                 startActivity(new Intent(
@@ -157,7 +158,6 @@ public class MainActivity extends Master implements ActionBar.TabListener {
                                     + appName)));
                 }
                 return true;
-
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -171,51 +171,62 @@ public class MainActivity extends Master implements ActionBar.TabListener {
             //you may open Interstitial Ads here
             interstitial.loadAd(adRequest);
 
-            // Toast.makeText(appContext, "BAck", Toast.LENGTH_LONG).show();
-            AlertDialog.Builder alert = new AlertDialog.Builder(
-                    MainActivity.this);
-            alert.setTitle(string.app_name);
-            alert.setIcon(R.drawable.icon);
-            alert.setMessage("Estas seguro de salir?");
+            /*Dialog Rate*/
+            if (existDir("/hd_wallpaper")) {
+                Log.e("RATE_APP", "Ya está calificada");
+                finish();
+            } else {
+                Dialog_Rate dialog_rate = new Dialog_Rate(MainActivity.this);
+                dialog_rate.show();
 
-            alert.setPositiveButton("Salir y calificar (Gracias)",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog,
-                                            int whichButton) {
-
-                            //you may open Interstitial Ads here
-                            //interstitial.loadAd(adRequest);
-                            final String appName = "com.jakkash.apksaver";//your application package name i.e play store application url
-
-                            Intent intent = new Intent(Intent.ACTION_VIEW).setData(Uri.parse("http://play.google.com/store/apps/details?id=" + appName));
-                            startActivity(intent);
-                            finish();
+                dialog_rate.setInterface_rate(new Dialog_Rate.Interface_Rate() {
+                    @Override
+                    public void getRate(boolean status, int option) {
+                        if (status) {
+                            if (option == 1) {
+                                finish();
+                            }
+                            if (option == 2) {
+                                createDir("/hd_wallpaper");
+                                final String appName = "com.jakkash.apksaver";
+                                Intent intent = new Intent(Intent.ACTION_VIEW).setData(Uri.parse("http://play.google.com/store/apps/details?id=" + appName));
+                                startActivity(intent);
+                                finish();
+                            }
                         }
-
-
-                    });
-
-            alert.setNegativeButton("Salir y no calificar",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog,
-                                            int whichButton) {
-
-
-                            finish();
-
-                        }
-                    });
-            alert.show();
+                    }
+                });
+            }
             return true;
         }
-
         return super.onKeyDown(keyCode, event);
-
     }
 
     public InterstitialAd getInterstitial() {
         return interstitial;
     }
 
+
+
+    public boolean existDir(String path){
+        boolean tmp = false;
+        File file = new File(Environment.getExternalStorageDirectory(), path);
+        if(file.exists()){
+            tmp = true;
+        }
+        return tmp;
+    }
+
+    public boolean createDir(String path){
+        boolean tmp_ = true;
+        File file = new File(Environment.getExternalStorageDirectory(), path);
+        if (!file.exists()) {
+            if (!file.mkdirs()) {
+                Log.e("TravellerLog :: ", "Problem creating Image folder");
+                tmp_ = false;
+            }
+        }
+        return tmp_;
+    }
 
 }

@@ -18,6 +18,13 @@
 	<string name="menu_next">Next</string>
 	<string name="img_no">No Favorite Found</string>
 	<string name="close">Close</string>
+
+    <!-- dialog rate -->
+    <string name="dialog_title">FRASES DE AMOR</string>
+    <string name="dialog_content">¿Ya te vas? Nuestra App es 100% gratuita, considera dejarnos una calificación de 5 estrellas. Tarda menos de 15 segundos ...</string>
+    <string name="dialog_ok">Salir y no calificar</string>
+    <string name="dialog_cancel">Salir y calificar (Gracias)</string>
 	
 	<string name="admob_id">ca-app-pub-8995045147204986/5276404156</string>
+    <string name="admob_interstitial">ca-app-pub-8995045147204986/6753137354</string>
 </resources>

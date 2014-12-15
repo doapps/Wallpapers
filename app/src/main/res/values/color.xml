@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="grid_back_color">#000000</color>
+
+    <!-- Dialog Color -->
+    <color name="sky_blue">#38b6e0</color>
+    <color name="gray">#d9d9d9</color>
     
 </resources>
