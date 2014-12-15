@@ -74,15 +74,20 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fullimageslider);
+
         db = new DatabaseHandler(this);
         dbManager = DatabaseManager.INSTANCE;
         dbManager.init(getApplicationContext());
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         setTitle(Constant.CATEGORY_TITLE);
-        AdView adView = (AdView) this.findViewById(R.id.adView);
+
+
+        AdView adView = (AdView)findViewById(R.id.adView);
         AdRequest adRequestb= new AdRequest.Builder().build();
         adView.loadAd(adRequestb);
+
+
         Intent i = getIntent();
         position = i.getIntExtra("POSITION_ID", 0);
         mAllImages = i.getStringArrayExtra("IMAGE_ARRAY");
@@ -128,10 +133,10 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
                 }
 
 
-//	        	Log.e("image_id", mAllImageId[position]);
-//	        	Log.e("image_cat_id", mAllImageCatId[position]);
-//	        	Log.e("image_catname", mAllImageCatName[position]);
-//	        	Log.e("image_url", mAllImages[position]);
+	        	/*Log.e("image_id", mAllImageId[position]);
+	        	Log.e("image_cat_id", mAllImageCatId[position]);
+	        	Log.e("image_catname", mAllImageCatName[position]);
+	        	Log.e("image_url", mAllImages[position]);*/
 
 
             }
@@ -550,7 +555,7 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
 //	      imageLoader.DisplayImage(Constant.SERVER_IMAGE_UPFOLDER+mAllImages[position], vp_imageview);
 //	      ((ViewPager) container).addView(vp_imageview, 0);
 
-            View imageLayout = inflater.inflate(R.layout.webview, container, false);
+            View imageLayout = inflater.inflate(R.layout.test, container, false);
             assert imageLayout != null;
 
             WebView webview = (WebView) imageLayout.findViewById(R.id.webView1);
