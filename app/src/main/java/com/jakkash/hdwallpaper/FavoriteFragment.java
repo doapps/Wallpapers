@@ -12,6 +12,7 @@ import com.example.util.JsonUtils;
 
 import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.TypedValue;
@@ -21,9 +22,10 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-public class FavoriteFragment extends Fragment {
+public class FavoriteFragment extends Fragment implements View.OnClickListener {
 	
 	GridView grid_fav;
 	DatabaseHandler db;
@@ -37,11 +39,20 @@ public class FavoriteFragment extends Fragment {
 	private int columnWidth;
 	JsonUtils util;
 
+    /****/
+    private ImageView ic_menu_rate;
+    private ImageView ic_menu_about;
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
 		View rootView = inflater.inflate(R.layout.fragment_favorite, container, false);
+
+        ic_menu_rate = (ImageView)rootView.findViewById(R.id.ic_menu_rate);
+        ic_menu_about = (ImageView)rootView.findViewById(R.id.ic_menu_about);
+        ic_menu_rate.setOnClickListener(this);
+        ic_menu_about.setOnClickListener(this);
 		
 		//Log.e("View", "called");
 		grid_fav=(GridView)rootView.findViewById(R.id.favorite_grid);
@@ -69,8 +80,6 @@ public class FavoriteFragment extends Fragment {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position,
 					long arg3) {
-				// TODO Auto-generated method stub
-			
 				Intent intslider=new Intent(getActivity(),SlideImageActivity.class);
 				intslider.putExtra("POSITION_ID", position);
 				intslider.putExtra("IMAGE_ARRAY", allArrayImage);
@@ -163,4 +172,28 @@ public class FavoriteFragment extends Fragment {
 	dbManager.closeDatabase();
 	}
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.ic_menu_rate:
+                final String appName = "com.jakkash.apksaver";//your application package name i.e play store application url
+                try {
+                    startActivity(new Intent(Intent.ACTION_VIEW,
+                            Uri.parse("market://details?id="
+                                    + appName)));
+                } catch (android.content.ActivityNotFoundException anfe) {
+                    startActivity(new Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("http://play.google.com/store/apps/details?id="
+                                    + appName)));
+                }
+                break;
+            case R.id.ic_menu_about:
+                Intent about = new Intent(getActivity(), AboutActivity.class);
+                startActivity(about);
+                break;
+            default:
+                break;
+        }
+    }
 }

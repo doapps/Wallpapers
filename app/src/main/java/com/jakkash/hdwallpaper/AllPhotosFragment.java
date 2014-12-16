@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,6 +18,7 @@ import com.example.util.JsonUtils;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -28,36 +28,45 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-public class AllPhotosFragment extends Fragment {
+public class AllPhotosFragment extends Fragment implements View.OnClickListener {
 
-	ListView lsv_allphotos;
-	List<ItemAllPhotos> arrayOfAllphotos;
-	AllPhotosListAdapter objAdapter;
-	AlertDialogManager alert = new AlertDialogManager();
-	private ItemAllPhotos objAllBean;
+    ListView lsv_allphotos;
+    List<ItemAllPhotos> arrayOfAllphotos;
+    AllPhotosListAdapter objAdapter;
+    AlertDialogManager alert = new AlertDialogManager();
+    private ItemAllPhotos objAllBean;
 
     /*agregado*/
     List<ItemCategory> arrayOfCategoryImage;
-    ArrayList<String> allListImage,allListImageCatName;
-    String[] allArrayImage,allArrayImageCatName;
+    ArrayList<String> allListImage, allListImageCatName;
+    String[] allArrayImage, allArrayImageCatName;
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+    /****/
+    private ImageView ic_menu_rate;
+    private ImageView ic_menu_about;
 
-		View rootView = inflater.inflate(R.layout.fragment_allphotos, container, false);
-		lsv_allphotos=(ListView)rootView.findViewById(R.id.lsv_allphotos);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
 
+        View rootView = inflater.inflate(R.layout.fragment_allphotos, container, false);
+        lsv_allphotos = (ListView) rootView.findViewById(R.id.lsv_allphotos);
 
-		arrayOfAllphotos=new ArrayList<ItemAllPhotos>();
-        arrayOfCategoryImage=new ArrayList<ItemCategory>();
-        allListImage=new ArrayList<String>();
-        allListImageCatName=new ArrayList<String>();
-        allArrayImage=new String[allListImage.size()];
-        allArrayImageCatName=new String[allListImageCatName.size()];
+        ic_menu_rate = (ImageView) rootView.findViewById(R.id.ic_menu_rate);
+        ic_menu_about = (ImageView) rootView.findViewById(R.id.ic_menu_about);
+        ic_menu_rate.setOnClickListener(this);
+        ic_menu_about.setOnClickListener(this);
+
+        arrayOfAllphotos = new ArrayList<ItemAllPhotos>();
+        arrayOfCategoryImage = new ArrayList<ItemCategory>();
+        allListImage = new ArrayList<String>();
+        allListImageCatName = new ArrayList<String>();
+        allArrayImage = new String[allListImage.size()];
+        allArrayImageCatName = new String[allListImageCatName.size()];
 
 
         if (JsonUtils.isNetworkAvailable(getActivity())) {
@@ -69,98 +78,123 @@ public class AllPhotosFragment extends Fragment {
         }
 
 
-
         lsv_allphotos.setOnItemClickListener(new OnItemClickListener() {
 
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int position,
-					long arg3) {
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int position,
+                                    long arg3) {
 
-				objAllBean=arrayOfAllphotos.get(position);
-				int Catid=objAllBean.getCategoryId();
-				Constant.CATEGORY_ID=objAllBean.getCategoryId();
-				Log.e("cat_id",""+Catid);
-                Log.e("CATEGORY_ID",""+Constant.CATEGORY_ID);
-				Constant.CATEGORY_TITLE=objAllBean.getCategoryName();
+                objAllBean = arrayOfAllphotos.get(position);
+                int Catid = objAllBean.getCategoryId();
+                Constant.CATEGORY_ID = objAllBean.getCategoryId();
+                Log.e("cat_id", "" + Catid);
+                Log.e("CATEGORY_ID", "" + Constant.CATEGORY_ID);
+                Constant.CATEGORY_TITLE = objAllBean.getCategoryName();
 
 				/*Intent intcat=new Intent(getActivity(),CategoryItem.class);
-				startActivity(intcat);*/
+                startActivity(intcat);*/
 
                 /**agregado**/
                 if (JsonUtils.isNetworkAvailable(getActivity())) {
-                    new MyTask_().execute(Constant.CATEGORY_ITEM_URL+Constant.CATEGORY_ID);
+                    new MyTask_().execute(Constant.CATEGORY_ITEM_URL + Constant.CATEGORY_ID);
                 } else {
                     showToast("No Network Connection!!!");
                     alert.showAlertDialog(getActivity(), "Internet Connection Error",
                             "Please connect to working Internet connection", false);
                 }
-			}
-		});
+            }
+        });
 
 
-		return rootView;
-	}
-	private	class MyTask extends AsyncTask<String, Void, String> {
+        return rootView;
+    }
 
-		ProgressDialog pDialog;
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.ic_menu_rate:
+                final String appName = "com.jakkash.apksaver";//your application package name i.e play store application url
+                try {
+                    startActivity(new Intent(Intent.ACTION_VIEW,
+                            Uri.parse("market://details?id="
+                                    + appName)));
+                } catch (android.content.ActivityNotFoundException anfe) {
+                    startActivity(new Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("http://play.google.com/store/apps/details?id="
+                                    + appName)));
+                }
+                break;
+            case R.id.ic_menu_about:
+                Intent about = new Intent(getActivity(), AboutActivity.class);
+                startActivity(about);
+                break;
+            default:
+                break;
+        }
+    }
 
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
+    private class MyTask extends AsyncTask<String, Void, String> {
 
-		//	pDialog = new ProgressDialog(getActivity());
-		//	pDialog.setMessage("Loading...");
-		//	pDialog.setCancelable(false);
-		//	pDialog.show();
-		}
+        ProgressDialog pDialog;
 
-		@Override
-		protected String doInBackground(String... params) {
-			return JsonUtils.getJSONString(params[0]);
-		}
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
 
-		@Override
-		protected void onPostExecute(String result) {
-			super.onPostExecute(result);
+            //	pDialog = new ProgressDialog(getActivity());
+            //	pDialog.setMessage("Loading...");
+            //	pDialog.setCancelable(false);
+            //	pDialog.show();
+        }
 
-			if (null != pDialog && pDialog.isShowing()) {
-				pDialog.dismiss();
-			}
+        @Override
+        protected String doInBackground(String... params) {
+            return JsonUtils.getJSONString(params[0]);
+        }
 
-			if (null == result || result.length() == 0) {
-				showToast("No data found from web!!!");
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
 
-			} else {
+            if (null != pDialog && pDialog.isShowing()) {
+                pDialog.dismiss();
+            }
 
-				try {
-					JSONObject mainJson = new JSONObject(result);
-					JSONArray jsonArray = mainJson.getJSONArray(Constant.CATEGORY_ARRAY_NAME);
-					JSONObject objJson = null;
-					for (int i = 0; i < jsonArray.length(); i++) {
-						  objJson = jsonArray.getJSONObject(i);
+            if (null == result || result.length() == 0) {
+                showToast("No data found from web!!!");
 
-						ItemAllPhotos objItem = new ItemAllPhotos();
-						objItem.setCategoryName(objJson.getString(Constant.CATEGORY_NAME));
-						objItem.setCategoryId(objJson.getInt(Constant.CATEGORY_CID));
-						objItem.setCategoryImage(objJson.getString(Constant.CATEGORY_IMAGE_URL));
-						arrayOfAllphotos.add(objItem);
+            } else {
 
+                try {
+                    JSONObject mainJson = new JSONObject(result);
+                    JSONArray jsonArray = mainJson.getJSONArray(Constant.CATEGORY_ARRAY_NAME);
+                    JSONObject objJson = null;
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        objJson = jsonArray.getJSONObject(i);
 
-					}
-
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
+                        ItemAllPhotos objItem = new ItemAllPhotos();
+                        objItem.setCategoryName(objJson.getString(Constant.CATEGORY_NAME));
+                        objItem.setCategoryId(objJson.getInt(Constant.CATEGORY_CID));
+                        objItem.setCategoryImage(objJson.getString(Constant.CATEGORY_IMAGE_URL));
+                        arrayOfAllphotos.add(objItem);
 
 
-  			setAdapterToListview();
-  		}
+                    }
 
-		}
-	}
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
 
 
-    private	class MyTask_ extends AsyncTask<String, Void, String> {
+                setAdapterToListview();
+            }
+
+        }
+    }
+
+
+    private class MyTask_ extends AsyncTask<String, Void, String> {
 
         ProgressDialog pDialog;
 
@@ -214,25 +248,23 @@ public class AllPhotosFragment extends Fragment {
                 }
 
 
-                for(int j=0;j<arrayOfCategoryImage.size();j++)
-                {
-                    Log.e("arrayOfCAtegory","entre");
+                for (int j = 0; j < arrayOfCategoryImage.size(); j++) {
+                    Log.e("arrayOfCAtegory", "entre");
 
-                    ItemCategory objCategoryBean=arrayOfCategoryImage.get(j);
+                    ItemCategory objCategoryBean = arrayOfCategoryImage.get(j);
                     Log.e("image_url", objCategoryBean.getImageurl());
                     allListImage.add(objCategoryBean.getImageurl());
-                    allArrayImage=allListImage.toArray(allArrayImage);
+                    allArrayImage = allListImage.toArray(allArrayImage);
 
                     allListImageCatName.add(objCategoryBean.getCategoryName());
-                    allArrayImageCatName=allListImageCatName.toArray(allArrayImageCatName);
+                    allArrayImageCatName = allListImageCatName.toArray(allArrayImageCatName);
 
                 }
 
 
-
                 setAdapterToListview_();
 
-                Intent intslider=new Intent(getActivity(),SlideImageActivity.class);
+                Intent intslider = new Intent(getActivity(), SlideImageActivity.class);
                 intslider.putExtra("POSITION_ID", 0);
                 intslider.putExtra("IMAGE_ARRAY", allArrayImage);
                 intslider.putExtra("IMAGE_CATNAME", allArrayImageCatName);
@@ -243,15 +275,15 @@ public class AllPhotosFragment extends Fragment {
         }
     }
 
-	public void setAdapterToListview() {
-		objAdapter = new AllPhotosListAdapter(getActivity(), R.layout.allphotos_lsv_item,
-				arrayOfAllphotos);
-		lsv_allphotos.setAdapter(objAdapter);
-	}
+    public void setAdapterToListview() {
+        objAdapter = new AllPhotosListAdapter(getActivity(), R.layout.allphotos_lsv_item,
+                arrayOfAllphotos);
+        lsv_allphotos.setAdapter(objAdapter);
+    }
 
-	public void showToast(String msg) {
-		Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
-	}
+    public void showToast(String msg) {
+        Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
+    }
 
     public void setAdapterToListview_() {
         /*objAdapter = new CategoryItemGridAdapter(CategoryItem.this, R.layout.latest_grid_item,

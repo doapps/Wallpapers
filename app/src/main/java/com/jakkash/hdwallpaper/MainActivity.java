@@ -9,6 +9,8 @@ import android.os.Environment;
 import android.os.Handler;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.util.Log;
 import android.view.KeyEvent;
 
@@ -19,6 +21,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.example.dialogs.Dialog_Rate;
+import com.example.util.UtilFonts;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.jakkash.hdwallpaper.R.string;
@@ -29,7 +32,7 @@ import java.io.File;
 
 public class MainActivity extends Master implements ActionBar.TabListener {
 
-    private String[] tabs = {"LATEST", "ALL PHOTOS", "MY FAVORITES"};
+    private String[] tabs = {"ULTIMOS", "TODOS", "FAVORITOS"};
     private TabsPagerAdapter mAdapter;
     private ViewPager viewPager;
     ActionBar.Tab tab;
@@ -52,9 +55,13 @@ public class MainActivity extends Master implements ActionBar.TabListener {
         mAdapter = new TabsPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(mAdapter);
 
+
+
+
         //tab added in action bar
         for (String tab_name : tabs) {
             tab = getSupportActionBar().newTab();
+
             tab.setText(tab_name);
             tab.setTabListener(this);
             getSupportActionBar().addTab(tab);
@@ -165,8 +172,6 @@ public class MainActivity extends Master implements ActionBar.TabListener {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        // TODO Auto-generated method stub
-
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             //you may open Interstitial Ads here
             interstitial.loadAd(adRequest);

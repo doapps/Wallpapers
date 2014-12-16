@@ -5,5 +5,7 @@
     <!-- Dialog Color -->
     <color name="sky_blue">#38b6e0</color>
     <color name="gray">#d9d9d9</color>
+    <color name="dark">#212121</color>
+    <color name="subdark">#2e2e2e</color>
     
 </resources>

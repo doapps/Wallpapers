@@ -44,7 +44,6 @@ public class CategoryItem extends SherlockActivity {
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.category_item_grid);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
