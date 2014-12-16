@@ -40,6 +40,8 @@ import com.example.favorite.DatabaseHandler.DatabaseManager;
 import com.example.favorite.Pojo;
 import com.example.imageloader.ImageLoader;
 import com.example.util.Constant;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
 import com.jakkash.hdwallpaper.MainActivity;
 import com.jakkash.hdwallpaper.R;
 import com.squareup.picasso.Picasso;
@@ -72,11 +74,25 @@ public class Slide_Image_Fragment_v2 extends SherlockFragment implements SensorE
     String Image_catName, Image_Url;
     Bitmap bgr;
 
+    /**
+     *
+     * @param savedInstanceState
+     */
+    private InterstitialAd interstitial;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ((Master) getActivity()).setI_load_images(this);
         ((Master) getActivity()).loadImages();
+
+        /**
+         * Admob
+         */
+        interstitial = new InterstitialAd(getSherlockActivity());
+        interstitial.setAdUnitId(getString(R.string.admob_interstitial));
+        AdRequest adRequest = new AdRequest.Builder().build();
+        interstitial.loadAd(adRequest);
     }
 
     @Override
@@ -100,87 +116,8 @@ public class Slide_Image_Fragment_v2 extends SherlockFragment implements SensorE
         lastUpdate = System.currentTimeMillis();
     }
 
+
     /*
-        db = new DatabaseHandler(this);
-        dbManager = DatabaseManager.INSTANCE;
-        dbManager.init(getActivity());
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        setTitle(Constant.CATEGORY_TITLE);
-        AdView adView = (AdView) this.findViewById(R.id.adView);
-        adView.loadAd(new AdRequest());
-        Intent i = getIntent();
-        position = i.getIntExtra("POSITION_ID", 0);
-        mAllImages = i.getStringArrayExtra("IMAGE_ARRAY");
-        mAllImageCatName = i.getStringArrayExtra("IMAGE_CATNAME");
-
-
-        TOTAL_IMAGE = mAllImages.length - 1;
-        viewpager = (ViewPager) findViewById(R.id.image_slider);
-        imageLoader = new ImageLoader(getActivity());
-        handler = new Handler();
-
-//		Log.e("lenth", ""+mAllImageId.length);
-//		for(int i1=0;i1<mAllImageId.length;i1++)
-//		{
-//			Log.e("Array",""+mAllImageId[i1]);
-//		}
-
-        ImagePagerAdapter adapter = new ImagePagerAdapter();
-        viewpager.setAdapter(adapter);
-        viewpager.setCurrentItem(position);
-
-        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        lastUpdate = System.currentTimeMillis();
-
-
-        viewpager.setOnPageChangeListener(new OnPageChangeListener() {
-
-            @Override
-            public void onPageSelected(int position) {
-                // TODO Auto-generated method stub
-
-                position = viewpager.getCurrentItem();
-                Image_Url = mAllImages[position];
-
-                List<Pojo> pojolist = db.getFavRow(Image_Url);
-                if (pojolist.size() == 0) {
-                    menu.getItem(3).setIcon(getResources().getDrawable(R.drawable.fav));
-                } else {
-                    if (pojolist.get(0).getImageurl().equals(Image_Url)) {
-                        menu.getItem(3).setIcon(getResources().getDrawable(R.drawable.fav_hover));
-                    }
-
-                }
-
-
-//	        	Log.e("image_id", mAllImageId[position]);
-//	        	Log.e("image_cat_id", mAllImageCatId[position]);
-//	        	Log.e("image_catname", mAllImageCatName[position]);
-//	        	Log.e("image_url", mAllImages[position]);
-
-
-            }
-
-            @Override
-            public void onPageScrolled(int arg0, float arg1, int position) {
-                // TODO Auto-generated method stub
-
-
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int position) {
-                // TODO Auto-generated method stub
-
-
-            }
-        });
-
-
-    }
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getSupportMenuInflater();
@@ -190,12 +127,13 @@ public class Slide_Image_Fragment_v2 extends SherlockFragment implements SensorE
         FirstFav();
         return super.onCreateOptionsMenu(menu);
     }
+    */
 
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case android.R.id.home:
-                onBackPressed();
+                //onBackPressed();
                 return true;
 
             case R.id.menu_back:
@@ -283,8 +221,6 @@ public class Slide_Image_Fragment_v2 extends SherlockFragment implements SensorE
         }
 
     }
-
-    */
 
     //add to favorite
 
@@ -718,14 +654,31 @@ public class Slide_Image_Fragment_v2 extends SherlockFragment implements SensorE
                 }
 
                 @Override
-                public void onPageScrolled(int arg0, float arg1, int position) {
-                    /*
-                    int total = viewpager.getAdapter().getCount() - 1;
-                    if(arg0 == total){
-                        viewpager.setCurrentItem(0);
+                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+                    /**
+                     * Solo 30 Imagenes y luego no vuelve a cargar
+                     */
+                    if(position == 30){
+                        if (interstitial.isLoaded()) {
+                            interstitial.show();
+                        }
                     }
-                    Log.e("PAGER",total + " - " + arg0);
-                    */
+
+
+                    /**
+                     * Cada 30 - 60 - 90 - 120 Imagenes
+                     */
+                    if(position == 30 || position == 60 || position == 120 || position == 240){
+                        if (interstitial.isLoaded()) {
+                            interstitial.show();
+                        }
+                    }else{
+                        if(!interstitial.isLoaded()){
+                            AdRequest adRequest = new AdRequest.Builder().build();
+                            interstitial.loadAd(adRequest);
+                        }
+                    }
                 }
 
                 @Override
