@@ -21,7 +21,7 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
 		switch (index) {
 		case 0:
 			// Latest fragment activity
-			return new Slide_Image_Fragment_v2();
+			return new LastFragment();
 		case 1:
 			// AllPhotos fragment activity
 			return new AllPhotosFragment();

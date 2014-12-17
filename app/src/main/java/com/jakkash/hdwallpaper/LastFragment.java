@@ -1,30 +1,27 @@
 package com.jakkash.hdwallpaper;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
-
-import android.graphics.Bitmap;
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.app.WallpaperManager;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,29 +29,46 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
+import com.example.adapter.CategoryItemGridAdapter;
 import com.example.adapter.OverflowAdapter;
 import com.example.favorite.DatabaseHandler;
 import com.example.favorite.Pojo;
-import com.example.favorite.DatabaseHandler.DatabaseManager;
 import com.example.imageloader.ImageLoader;
+import com.example.item.ItemAllPhotos;
+import com.example.item.ItemCategory;
 import com.example.item.ItemOption;
+import com.example.util.AlertDialogManager;
 import com.example.util.Constant;
+import com.example.util.JsonUtils;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
+import com.me.doapps.v2.Master;
+import com.squareup.picasso.Picasso;
 
-public class SlideImageActivity extends SherlockActivity implements SensorEventListener, View.OnClickListener {
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Created by jonathan on 17/12/2014.
+ */
+public class LastFragment extends Fragment implements View.OnClickListener {
     private int position;
     String[] mAllImages, mAllImageCatName;
 
@@ -62,7 +76,7 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
     ImageView vp_imageview;
     ViewPager viewpager;
     public ImageLoader imageLoader;
-    int TOTAL_IMAGE;
+    private int TOTAL_IMAGE;
     private String fileName;
     private SensorManager sensorManager;
     private boolean checkImage = false;
@@ -71,7 +85,7 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
     Runnable Update;
     boolean Play_Flag = false;
     private Menu menu;
-    private DatabaseManager dbManager;
+    private DatabaseHandler.DatabaseManager dbManager;
     String Image_catName, Image_Url;
     Bitmap bgr;
 
@@ -87,27 +101,39 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
 
     private int currentState, previousState;
 
+    /*agregado*/
+    List<ItemCategory> arrayOfCategoryImage;
+    ArrayList<String> allListImage, allListImageCatName;
+    String[] allArrayImage, allArrayImageCatName;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fullimageslider);
+    }
 
-        db = new DatabaseHandler(this);
-        dbManager = DatabaseManager.INSTANCE;
-        dbManager.init(getApplicationContext());
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        db = new DatabaseHandler(getActivity());
+        dbManager = DatabaseHandler.DatabaseManager.INSTANCE;
+        dbManager.init(getActivity());
+    }
 
-        getSupportActionBar().hide();
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fullimageslider, container, false);
+    }
 
-        setTitle(Constant.CATEGORY_TITLE);
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         /****/
-        ic_home = (LinearLayout) findViewById(R.id.ic_home);
-        ic_menu_back = (ImageView) findViewById(R.id.ic_menu_back);
-        ic_menu_next = (ImageView) findViewById(R.id.ic_menu_next);
-        ic_menu_fav = (ImageView) findViewById(R.id.ic_menu_fav);
-        ic_overflow = (ImageView) findViewById(R.id.ic_overflow);
+        ic_home = (LinearLayout) getActivity().findViewById(R.id.ic_home);
+        ic_menu_back = (ImageView) getActivity().findViewById(R.id.ic_menu_back);
+        ic_menu_next = (ImageView) getActivity().findViewById(R.id.ic_menu_next);
+        ic_menu_fav = (ImageView) getActivity().findViewById(R.id.ic_menu_fav);
+        ic_overflow = (ImageView) getActivity().findViewById(R.id.ic_overflow);
 
         ic_home.setOnClickListener(this);
         ic_menu_back.setOnClickListener(this);
@@ -126,35 +152,39 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
         /**
          * Admob
          */
-        interstitial = new InterstitialAd(this);
+        interstitial = new InterstitialAd(getActivity());
         interstitial.setAdUnitId(getString(R.string.admob_interstitial));
         AdRequest adRequest = new AdRequest.Builder().build();
         interstitial.loadAd(adRequest);
         /****/
 
 
-        AdView adView = (AdView) findViewById(R.id.adView);
+        AdView adView = (AdView) getActivity().findViewById(R.id.adView);
         AdRequest adRequestb = new AdRequest.Builder().build();
         adView.loadAd(adRequestb);
 
-        Intent i = getIntent();
-        position = i.getIntExtra("POSITION_ID", 0);
-        mAllImages = i.getStringArrayExtra("IMAGE_ARRAY");
-        mAllImageCatName = i.getStringArrayExtra("IMAGE_CATNAME");
 
-        TOTAL_IMAGE = mAllImages.length - 1;
-        viewpager = (ViewPager) findViewById(R.id.image_slider);
-        imageLoader = new ImageLoader(getApplicationContext());
+
+
+        viewpager = (ViewPager) getActivity().findViewById(R.id.image_slider);
+        imageLoader = new ImageLoader(getActivity());
         handler = new Handler();
 
-        ImagePagerAdapter adapter = new ImagePagerAdapter();
-        viewpager.setAdapter(adapter);
-        viewpager.setCurrentItem(position);
 
-        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        arrayOfCategoryImage = new ArrayList<ItemCategory>();
+        allListImage = new ArrayList<String>();
+        allListImageCatName = new ArrayList<String>();
+
+        /**agregado**/
+        if (JsonUtils.isNetworkAvailable(getActivity())) {
+            new MyTask_().execute(Constant.CATEGORY_ITEM_URL + "31");
+        } else {
+            showToast("No Network Connection!!!");
+        }
+
         lastUpdate = System.currentTimeMillis();
 
-        viewpager.setOnPageChangeListener(new OnPageChangeListener() {
+        viewpager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
 
@@ -228,13 +258,11 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
         });
     }
 
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.ic_home:
-                startActivity(new Intent(this, MainActivity.class));
-                finish();
+                startActivity(new Intent(getActivity(), MainActivity.class));
                 break;
             case R.id.ic_menu_back:
                 position = viewpager.getCurrentItem();
@@ -265,8 +293,8 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
                 }
                 break;
             case R.id.ic_overflow:
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setAdapter(new OverflowAdapter(itemOptions, this), onClickListener);
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setAdapter(new OverflowAdapter(itemOptions, getActivity()), onClickListener);
                 builder.create();
                 builder.show();
             default:
@@ -305,7 +333,7 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
                     }
                     break;
                 case 5:
-                    Intent about = new Intent(SlideImageActivity.this, AboutActivity.class);
+                    Intent about = new Intent(getActivity(), AboutActivity.class);
                     startActivity(about);
                     break;
                 case 6:
@@ -326,16 +354,20 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
         Image_Url = mAllImages[position];
 
         db.AddtoFavorite(new Pojo(Image_catName, Image_Url));
-        Toast.makeText(getApplicationContext(), "Added to Favorite", Toast.LENGTH_SHORT).show();
+        Toast toast = Toast.makeText(getActivity(), "Added to Favorite", Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL, 0, 150);
+        toast.show();
         //menu.getItem(3).setIcon(getResources().getDrawable(R.drawable.fav_hover));
         ic_menu_fav.setImageResource(R.drawable.fav_hover);
     }
 
-    //remove from favorite
+    //remove from edsxfavorite
     public void RemoveFav(int position) {
         Image_Url = mAllImages[position];
         db.RemoveFav(new Pojo(Image_Url));
-        Toast.makeText(getApplicationContext(), "Removed from Favorite", Toast.LENGTH_SHORT).show();
+        Toast toast = Toast.makeText(getActivity(), "Removed from Favorite", Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL, 0, 150);
+        toast.show();
         //menu.getItem(3).setIcon(getResources().getDrawable(R.drawable.fav));
         ic_menu_fav.setImageResource(R.drawable.fav);
 
@@ -390,9 +422,9 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
         Bitmap mBitmap = viewpager.getDrawingCache();
 
         WallpaperManager myWallpaperManager = WallpaperManager
-                .getInstance(getApplicationContext());
+                .getInstance(getActivity());
         DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int height = displayMetrics.heightPixels;
         int width = displayMetrics.widthPixels << 1;
         int width1 = width / 2;
@@ -400,10 +432,10 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
         try {
             myWallpaperManager.setBitmap(mBitmap);
             myWallpaperManager.suggestDesiredDimensions(width1, height);
-            Toast.makeText(SlideImageActivity.this, "Wallpaper set",
+            Toast.makeText(getActivity(), "Wallpaper set",
                     Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
-            Toast.makeText(SlideImageActivity.this, "Error setting wallpaper",
+            Toast.makeText(getActivity(), "Error setting wallpaper",
                     Toast.LENGTH_SHORT).show();
         }
     }
@@ -422,11 +454,11 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
     }
 
     public void saveDialog() {
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
 
         alert.setTitle("Save file...");
         alert.setMessage("File name to save ");
-        final EditText input = new EditText(this);
+        final EditText input = new EditText(getActivity());
         input.setText("");
         alert.setView(input);
 
@@ -434,16 +466,16 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
             public void onClick(DialogInterface dialog, int whichButton) {
                 String fname = input.getText().toString();
                 if (fname.equalsIgnoreCase("")) {
-                    Toast.makeText(getApplicationContext(), "Please Enter File Name", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Please Enter File Name", Toast.LENGTH_SHORT).show();
                 } else {
                     String path = Environment.getExternalStorageDirectory().toString();
                     File f = new File(path, "Wallpaper/" + fname + ".jpg");
-                    Toast.makeText(getApplicationContext(), "Save Path:Sdcard/Wallpaper", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Save Path:Sdcard/Wallpaper", Toast.LENGTH_SHORT).show();
 
                     if (f.exists()) {
-                        SlideImageActivity.this.fileExistsConfirmationDialog(fname);
+                        fileExistsConfirmationDialog(fname);
                     } else {
-                        SlideImageActivity.this.saveToFile(fname);
+                        saveToFile(fname);
                     }
                 }
             }
@@ -459,14 +491,14 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
     }
 
     public void fileExistsConfirmationDialog(final String fname) {
-        AlertDialog.Builder alert = new AlertDialog.Builder(SlideImageActivity.this);
+        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
         alert.setTitle("Error");
         alert.setMessage("The file \"" + fname
                 + "\" already exists, do you wish to overwrite it?");
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                SlideImageActivity.this.saveToFile(fname);
+                saveToFile(fname);
             }
         });
 
@@ -527,7 +559,7 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
                 if (position == TOTAL_IMAGE) {
                     position = TOTAL_IMAGE;
                     handler.removeCallbacks(Update);//when last image play mode goes to Stop
-                    Toast.makeText(getApplicationContext(), "Last Image Auto Play Stoped", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Last Image Auto Play Stoped", Toast.LENGTH_SHORT).show();
                     menu.getItem(1).setIcon(getResources().getDrawable(R.drawable.play));
                     Play_Flag = false;
                     //Show All Menu when Auto Play Stop
@@ -578,7 +610,7 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
         private LayoutInflater inflater;
 
         public ImagePagerAdapter() {
-            inflater = getLayoutInflater();
+            inflater = getActivity().getLayoutInflater();
         }
 
         @Override
@@ -594,16 +626,6 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
-
-//	      Context context = SlideImageActivity.this;
-//  	      vp_imageview = new ImageView(context);
-
-//	      int padding = context.getResources().getDimensionPixelSize(
-//	          R.dimen.padding_medium);
-//	      imageView.setPadding(padding, padding, padding, padding);
-//	      vp_imageview.setScaleType(ImageView.ScaleType.FIT_XY);
-//	      imageLoader.DisplayImage(Constant.SERVER_IMAGE_UPFOLDER+mAllImages[position], vp_imageview);
-//	      ((ViewPager) container).addView(vp_imageview, 0);
 
             View imageLayout = inflater.inflate(R.layout.test, container, false);
             assert imageLayout != null;
@@ -623,7 +645,7 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
             webview.setWebChromeClient(new WebChromeClient() {
                 @Override
                 public void onProgressChanged(WebView view, int newProgress) {
-                    // TODO Auto-generated method stub
+
                     super.onProgressChanged(view, newProgress);
 
                     if (newProgress == 100) {
@@ -648,17 +670,7 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
         }
     }
 
-    @Override
-    public void onAccuracyChanged(Sensor arg0, int arg1) {
-    }
 
-
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            getAccelerometer(event);
-        }
-    }
 
     private void getAccelerometer(SensorEvent event) {
         float[] values = event.values;
@@ -693,37 +705,92 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
     }
 
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // register this class as a listener for the orientation and
-        // accelerometer sensors
-        if (dbManager == null) {
-            dbManager = DatabaseManager.INSTANCE;
-            dbManager.init(getApplicationContext());
-        } else if (dbManager.isDatabaseClosed()) {
-            dbManager.init(getApplicationContext());
+    /****/
+    private class MyTask_ extends AsyncTask<String, Void, String> {
+
+        ProgressDialog pDialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            pDialog = new ProgressDialog(getActivity());
+            pDialog.setMessage("Loading...");
+            pDialog.setCancelable(false);
+            pDialog.show();
         }
-        sensorManager.registerListener(this,
-                sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-                SensorManager.SENSOR_DELAY_NORMAL);
+
+        @Override
+        protected String doInBackground(String... params) {
+            return JsonUtils.getJSONString(params[0]);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            Log.e("result_", result);
+            super.onPostExecute(result);
+
+
+            if (null != pDialog && pDialog.isShowing()) {
+                pDialog.dismiss();
+            }
+
+            if (null == result || result.length() == 0) {
+                showToast("No data found from web!!!");
+                //CategoryItem.this.finish();
+            } else {
+
+                try {
+                    JSONObject mainJson = new JSONObject(result);
+                    JSONArray jsonArray = mainJson.getJSONArray(Constant.CATEGORY_ITEM_ARRAY);
+                    JSONObject objJson = null;
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        objJson = jsonArray.getJSONObject(i);
+
+                        ItemCategory objItem = new ItemCategory();
+
+                        objItem.setCategoryName(objJson.getString(Constant.CATEGORY_ITEM_CATNAME));
+                        objItem.setImageurl(objJson.getString(Constant.CATEGORY_ITEM_IMAGEURL));
+
+                        arrayOfCategoryImage.add(objItem);
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                for (int j = 0; j < arrayOfCategoryImage.size(); j++) {
+                    ItemCategory objCategoryBean = arrayOfCategoryImage.get(j);
+                    allListImage.add(objCategoryBean.getImageurl());
+                    allListImageCatName.add(objCategoryBean.getCategoryName());
+                }
+
+                allArrayImage = new String[allListImage.size()];
+                Log.e("all image size", allListImage.size()+"");
+
+                allArrayImageCatName = new String[allListImageCatName.size()];
+                Log.e("allListImageCatName", allListImageCatName.size()+"");
+
+
+                allArrayImage = allListImage.toArray(allArrayImage);
+                allArrayImageCatName = allListImageCatName.toArray(allArrayImageCatName);
+
+
+                position = 0;
+                mAllImages = allArrayImage;
+                mAllImageCatName = allArrayImageCatName;
+
+                TOTAL_IMAGE = mAllImages.length - 1;
+
+                ImagePagerAdapter adapter = new ImagePagerAdapter();
+                viewpager.setAdapter(adapter);
+                viewpager.setCurrentItem(position);
+            }
+
+        }
     }
 
-    @Override
-    protected void onPause() {
-        // unregister listener
-        super.onPause();
-        if (!dbManager.isDatabaseClosed())
-            dbManager.closeDatabase();
-        sensorManager.unregisterListener(this);
+    public void showToast(String msg) {
+        Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
     }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        handler.removeCallbacks(Update);
-        sensorManager.unregisterListener(this);
-        if (dbManager != null) dbManager.closeDatabase();
-    }
-
 }

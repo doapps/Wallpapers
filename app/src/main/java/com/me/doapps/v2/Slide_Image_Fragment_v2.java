@@ -97,15 +97,10 @@ public class Slide_Image_Fragment_v2 extends SherlockFragment implements SensorE
         ((Master) getActivity()).setI_load_images(this);
         ((Master) getActivity()).loadImages();
 
-        /**
-         * Admob
-         */
         interstitial = new InterstitialAd(getSherlockActivity());
         interstitial.setAdUnitId(getString(R.string.admob_interstitial));
         AdRequest adRequest = new AdRequest.Builder().build();
         interstitial.loadAd(adRequest);
-
-
     }
 
     @Override
@@ -149,119 +144,10 @@ public class Slide_Image_Fragment_v2 extends SherlockFragment implements SensorE
         itemOptions.add(new ItemOption("Acerca de", R.drawable.about, 5));
         itemOptions.add(new ItemOption("Más Apps", R.drawable.more, 6));
         /****/
-
-    }
-
-
-    /*
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getSupportMenuInflater();
-        inflater.inflate(R.menu.photo_menu, menu);
-        this.menu = menu;
-        //for when 1st item of view pager is favorite mode
-        FirstFav();
-        return super.onCreateOptionsMenu(menu);
-    }
-    */
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem menuItem) {
-        switch (menuItem.getItemId()) {
-            case android.R.id.home:
-                //onBackPressed();
-                return true;
-
-            case R.id.menu_back:
-
-                position = viewpager.getCurrentItem();
-                position--;
-                if (position < 0) {
-                    position = 0;
-                }
-                viewpager.setCurrentItem(position);
-
-                return true;
-
-            case R.id.menu_next:
-
-                position = viewpager.getCurrentItem();
-                position++;
-                if (position == TOTAL_IMAGE) {
-                    position = TOTAL_IMAGE;
-                }
-                viewpager.setCurrentItem(position);
-
-                return true;
-
-            case R.id.menu_play:
-
-                if (Play_Flag) {
-                    handler.removeCallbacks(Update);
-                    menuItem.setIcon(getResources().getDrawable(R.drawable.play));
-                    Play_Flag = false;
-                    ShowMenu();
-                } else {
-                    if (viewpager.getCurrentItem() == TOTAL_IMAGE) {
-                        Toast.makeText(getActivity(), "Currently Last Image!! Not Start Auto Play", Toast.LENGTH_SHORT).show();
-                    } else {
-                        AutoPlay();
-                        menuItem.setIcon(getResources().getDrawable(R.drawable.stop));
-                        Play_Flag = true;
-                        HideMenu();
-                    }
-
-
-                }
-                return true;
-
-            case R.id.menu_fav:
-
-                position = viewpager.getCurrentItem();
-
-                Image_Url = mAllImages[position];
-
-                List<Pojo> pojolist = db.getFavRow(Image_Url);
-                if (pojolist.size() == 0) {
-                    AddtoFav(position);//if size is zero i.e means that record not in database show add to favorite
-                } else {
-                    if (pojolist.get(0).getImageurl().equals(Image_Url)) {
-                        RemoveFav(position);
-                    }
-
-                }
-
-                return true;
-
-            case R.id.menu_overflow:
-                //just override click
-                return true;
-            case R.id.menu_share:
-
-                Share();
-                return true;
-
-            case R.id.menu_save:
-
-                save();
-                return true;
-
-            case R.id.menu_setaswallaper:
-
-                SetAsWallpaper();
-                return true;
-
-
-            default:
-                return super.onOptionsItemSelected(menuItem);
-        }
-
     }
 
     //add to favorite
-
     public void AddtoFav(int position) {
-
         Image_catName = mAllImageCatName[position];
         Image_Url = mAllImages[position];
 
@@ -278,7 +164,6 @@ public class Slide_Image_Fragment_v2 extends SherlockFragment implements SensorE
         Toast.makeText(getActivity(), "Removed from Favorite", Toast.LENGTH_SHORT).show();
         //menu.getItem(3).setIcon(getResources().getDrawable(R.drawable.fav));
         ic_menu_fav.setImageResource(R.drawable.fav);
-
     }
 
     //for share current image of view  pager
@@ -290,7 +175,6 @@ public class Slide_Image_Fragment_v2 extends SherlockFragment implements SensorE
         File file = new File(path,
                 "Android/data/com.example.actionbartest/cache/share_cache.jpg");//default  path of android
         file.getParentFile().mkdirs();
-
         try {
             file.createNewFile();
         } catch (Exception e) {
@@ -453,7 +337,6 @@ public class Slide_Image_Fragment_v2 extends SherlockFragment implements SensorE
     }
 
     //auto play slide show
-
     public void AutoPlay() {
         Update = new Runnable() {
 
@@ -619,17 +502,6 @@ public class Slide_Image_Fragment_v2 extends SherlockFragment implements SensorE
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
-
-//	      Context context = SlideImageActivity.this;
-//  	      vp_imageview = new ImageView(context);
-
-//	      int padding = context.getResources().getDimensionPixelSize(
-//	          R.dimen.padding_medium);
-//	      imageView.setPadding(padding, padding, padding, padding);
-//	      vp_imageview.setScaleType(ImageView.ScaleType.FIT_XY);
-//	      imageLoader.DisplayImage(Constant.SERVER_IMAGE_UPFOLDER+mAllImages[position], vp_imageview);
-//	      ((ViewPager) container).addView(vp_imageview, 0);
-
             View imageLayout = inflater.inflate(R.layout.webview, container, false);
             assert imageLayout != null;
 
@@ -641,7 +513,6 @@ public class Slide_Image_Fragment_v2 extends SherlockFragment implements SensorE
 
             container.addView(imageLayout, 0);
             return imageLayout;
-
         }
 
         @Override
@@ -653,7 +524,6 @@ public class Slide_Image_Fragment_v2 extends SherlockFragment implements SensorE
     @Override
     public void onAccuracyChanged(Sensor arg0, int arg1) {
     }
-
 
     @Override
     public void onSensorChanged(SensorEvent event) {
@@ -708,23 +578,7 @@ public class Slide_Image_Fragment_v2 extends SherlockFragment implements SensorE
                 SensorManager.SENSOR_DELAY_NORMAL);
     }
 
-    /*
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (!dbManager.isDatabaseClosed())
-            dbManager.closeDatabase();
-        sensorManager.unregisterListener(this);
-    }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        handler.removeCallbacks(Update);
-        sensorManager.unregisterListener(this);
-        if (dbManager != null) dbManager.closeDatabase();
-    }
-    */
 
     @Override
     public void onFinishLoad(boolean status) {

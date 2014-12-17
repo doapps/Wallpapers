@@ -122,16 +122,6 @@ public class MainActivity extends Master implements ActionBar.TabListener {
     public void onTabUnselected(Tab tab, FragmentTransaction transaction) {
     }
 
-    /*
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-
-        MenuInflater inflater = getSupportMenuInflater();
-        inflater.inflate(R.menu.main, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-    */
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
