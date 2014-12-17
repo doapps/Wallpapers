@@ -1,6 +1,11 @@
 package com.jakkash.hdwallpaper;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -10,17 +15,23 @@ import org.json.JSONObject;
 
 import com.example.adapter.AllPhotosListAdapter;
 import com.example.adapter.CategoryItemGridAdapter;
+import com.example.adapter.OverflowAdapter;
 import com.example.item.ItemAllPhotos;
 import com.example.item.ItemCategory;
+import com.example.item.ItemOption;
 import com.example.util.AlertDialogManager;
 import com.example.util.Constant;
 import com.example.util.JsonUtils;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -48,6 +59,8 @@ public class AllPhotosFragment extends Fragment implements View.OnClickListener 
     /****/
     private ImageView ic_menu_rate;
     private ImageView ic_menu_about;
+    private ImageView ic_menu_more;
+    private int Catid;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -58,15 +71,15 @@ public class AllPhotosFragment extends Fragment implements View.OnClickListener 
 
         ic_menu_rate = (ImageView) rootView.findViewById(R.id.ic_menu_rate);
         ic_menu_about = (ImageView) rootView.findViewById(R.id.ic_menu_about);
+        ic_menu_more = (ImageView) rootView.findViewById(R.id.ic_menu_more);
         ic_menu_rate.setOnClickListener(this);
         ic_menu_about.setOnClickListener(this);
+        ic_menu_more.setOnClickListener(this);
 
         arrayOfAllphotos = new ArrayList<ItemAllPhotos>();
         arrayOfCategoryImage = new ArrayList<ItemCategory>();
         allListImage = new ArrayList<String>();
         allListImageCatName = new ArrayList<String>();
-        allArrayImage = new String[allListImage.size()];
-        allArrayImageCatName = new String[allListImageCatName.size()];
 
 
         if (JsonUtils.isNetworkAvailable(getActivity())) {
@@ -85,10 +98,9 @@ public class AllPhotosFragment extends Fragment implements View.OnClickListener 
                                     long arg3) {
 
                 objAllBean = arrayOfAllphotos.get(position);
-                int Catid = objAllBean.getCategoryId();
+                Catid = objAllBean.getCategoryId();
+                Log.e("cat_id", Catid+"");
                 Constant.CATEGORY_ID = objAllBean.getCategoryId();
-                Log.e("cat_id", "" + Catid);
-                Log.e("CATEGORY_ID", "" + Constant.CATEGORY_ID);
                 Constant.CATEGORY_TITLE = objAllBean.getCategoryName();
 
 				/*Intent intcat=new Intent(getActivity(),CategoryItem.class);
@@ -96,7 +108,7 @@ public class AllPhotosFragment extends Fragment implements View.OnClickListener 
 
                 /**agregado**/
                 if (JsonUtils.isNetworkAvailable(getActivity())) {
-                    new MyTask_().execute(Constant.CATEGORY_ITEM_URL + Constant.CATEGORY_ID);
+                    new MyTask_().execute(Constant.CATEGORY_ITEM_URL + Catid);
                 } else {
                     showToast("No Network Connection!!!");
                     alert.showAlertDialog(getActivity(), "Internet Connection Error",
@@ -129,10 +141,17 @@ public class AllPhotosFragment extends Fragment implements View.OnClickListener 
                 Intent about = new Intent(getActivity(), AboutActivity.class);
                 startActivity(about);
                 break;
+            case R.id.ic_menu_more:
+                startActivity(new Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("https://play.google.com/store/search?q=jakkash+application")));
+                break;
             default:
                 break;
         }
     }
+
+
 
     private class MyTask extends AsyncTask<String, Void, String> {
 
@@ -141,11 +160,6 @@ public class AllPhotosFragment extends Fragment implements View.OnClickListener 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-
-            //	pDialog = new ProgressDialog(getActivity());
-            //	pDialog.setMessage("Loading...");
-            //	pDialog.setCancelable(false);
-            //	pDialog.show();
         }
 
         @Override
@@ -165,7 +179,6 @@ public class AllPhotosFragment extends Fragment implements View.OnClickListener 
                 showToast("No data found from web!!!");
 
             } else {
-
                 try {
                     JSONObject mainJson = new JSONObject(result);
                     JSONArray jsonArray = mainJson.getJSONArray(Constant.CATEGORY_ARRAY_NAME);
@@ -178,15 +191,11 @@ public class AllPhotosFragment extends Fragment implements View.OnClickListener 
                         objItem.setCategoryId(objJson.getInt(Constant.CATEGORY_CID));
                         objItem.setCategoryImage(objJson.getString(Constant.CATEGORY_IMAGE_URL));
                         arrayOfAllphotos.add(objItem);
-
-
                     }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
-
                 setAdapterToListview();
             }
 
@@ -215,7 +224,12 @@ public class AllPhotosFragment extends Fragment implements View.OnClickListener 
 
         @Override
         protected void onPostExecute(String result) {
+            Log.e("result_", result);
             super.onPostExecute(result);
+            arrayOfCategoryImage.clear();
+            allListImage.clear();
+            allListImageCatName.clear();
+
 
             if (null != pDialog && pDialog.isShowing()) {
                 pDialog.dismiss();
@@ -235,36 +249,36 @@ public class AllPhotosFragment extends Fragment implements View.OnClickListener 
 
                         ItemCategory objItem = new ItemCategory();
 
-
                         objItem.setCategoryName(objJson.getString(Constant.CATEGORY_ITEM_CATNAME));
                         objItem.setImageurl(objJson.getString(Constant.CATEGORY_ITEM_IMAGEURL));
 
                         arrayOfCategoryImage.add(objItem);
-
                     }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
-
                 for (int j = 0; j < arrayOfCategoryImage.size(); j++) {
-                    Log.e("arrayOfCAtegory", "entre");
-
                     ItemCategory objCategoryBean = arrayOfCategoryImage.get(j);
-                    Log.e("image_url", objCategoryBean.getImageurl());
                     allListImage.add(objCategoryBean.getImageurl());
-                    allArrayImage = allListImage.toArray(allArrayImage);
-
                     allListImageCatName.add(objCategoryBean.getCategoryName());
-                    allArrayImageCatName = allListImageCatName.toArray(allArrayImageCatName);
-
                 }
 
+                allArrayImage = new String[allListImage.size()];
+                Log.e("all image size", allListImage.size()+"");
+
+                allArrayImageCatName = new String[allListImageCatName.size()];
+                Log.e("allListImageCatName", allListImageCatName.size()+"");
+
+
+                allArrayImage = allListImage.toArray(allArrayImage);
+                allArrayImageCatName = allListImageCatName.toArray(allArrayImageCatName);
 
                 setAdapterToListview_();
 
                 Intent intslider = new Intent(getActivity(), SlideImageActivity.class);
+                Log.e("params", "image_array:"+allArrayImage.length);
                 intslider.putExtra("POSITION_ID", 0);
                 intslider.putExtra("IMAGE_ARRAY", allArrayImage);
                 intslider.putExtra("IMAGE_CATNAME", allArrayImageCatName);
@@ -289,7 +303,7 @@ public class AllPhotosFragment extends Fragment implements View.OnClickListener 
         /*objAdapter = new CategoryItemGridAdapter(CategoryItem.this, R.layout.latest_grid_item,
                 arrayOfCategoryImage,columnWidth);
         grid_cat_item.setAdapter(objAdapter);*/
-
-
     }
+
+
 }

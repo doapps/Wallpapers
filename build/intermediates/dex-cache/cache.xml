@@ -2,46 +2,46 @@
 <items version="2" >
 
     <item
-        jar="/Users/Gantz/Desktop/DoApps/Wallpapers/Wallpapers/app/build/intermediates/exploded-aar/com.actionbarsherlock/actionbarsherlock/4.4.0/classes.jar"
+        jar="D:\CAPACITACION_2014\ANDROID\Wallpapers\app\build\intermediates\exploded-aar\com.google.android.gms\play-services\6.1.71\classes.jar"
         jumboMode="false"
-        revision="21.1.1"
-        sha1="af64527b748983a75de9c0756e9768b56b240a49">
-        <dex dex="/Users/Gantz/Desktop/DoApps/Wallpapers/Wallpapers/app/build/intermediates/pre-dexed/debug/classes-228231c2571fbece2d948403050a7d4848fb2e30.jar" />
-    </item>
-    <item
-        jar="/Users/Gantz/Desktop/DoApps/Wallpapers/Wallpapers/app/build/intermediates/exploded-aar/com.google.android.gms/play-services/6.1.71/classes.jar"
-        jumboMode="false"
-        revision="21.1.1"
+        revision="21.0.2"
         sha1="0f6d5c1ef2e982c3b7858408e3df389cf5d202da">
-        <dex dex="/Users/Gantz/Desktop/DoApps/Wallpapers/Wallpapers/app/build/intermediates/pre-dexed/debug/classes-4ad1f0f13fe67d9cb605d3e2e0ccbe3c64031091.jar" />
+        <dex dex="D:\CAPACITACION_2014\ANDROID\Wallpapers\app\build\intermediates\pre-dexed\debug\classes-5eef25ab9426a1f27cf5943c1a190ab2bbe6a77f.jar" />
     </item>
     <item
-        jar="/Users/Gantz/Documents/sdk/extras/android/m2repository/com/android/support/support-annotations/20.0.0/support-annotations-20.0.0.jar"
+        jar="D:\CAPACITACION_2014\ANDROID\Wallpapers\app\build\intermediates\exploded-aar\com.android.support\support-v4\20.0.0\classes.jar"
         jumboMode="false"
-        revision="21.1.1"
-        sha1="9d9013e9ff35fc3756411e62873c363c70c638fa">
-        <dex dex="/Users/Gantz/Desktop/DoApps/Wallpapers/Wallpapers/app/build/intermediates/pre-dexed/debug/support-annotations-20.0.0-cc5c85107f29ba1a2229b7117274561a6027f374.jar" />
-    </item>
-    <item
-        jar="/Users/Gantz/Desktop/DoApps/Wallpapers/Wallpapers/app/build/intermediates/exploded-aar/com.android.support/support-v4/20.0.0/libs/internal_impl-20.0.0.jar"
-        jumboMode="false"
-        revision="21.1.1"
-        sha1="e40b3078e3fbd353c9f44da8df25a8fc0078209d">
-        <dex dex="/Users/Gantz/Desktop/DoApps/Wallpapers/Wallpapers/app/build/intermediates/pre-dexed/debug/internal_impl-20.0.0-01262258724bb1da916d6cd965b133c7362ab946.jar" />
-    </item>
-    <item
-        jar="/Users/Gantz/.gradle/caches/modules-2/files-2.1/com.squareup.picasso/picasso/2.3.2/d6b7f0093cec6c9faf65dbfd6a6a345d0ed25e27/picasso-2.3.2.jar"
-        jumboMode="false"
-        revision="21.1.1"
-        sha1="d6b7f0093cec6c9faf65dbfd6a6a345d0ed25e27">
-        <dex dex="/Users/Gantz/Desktop/DoApps/Wallpapers/Wallpapers/app/build/intermediates/pre-dexed/debug/picasso-2.3.2-d6964556ff60ecc15674db0b6b2dcafe3863416e.jar" />
-    </item>
-    <item
-        jar="/Users/Gantz/Desktop/DoApps/Wallpapers/Wallpapers/app/build/intermediates/exploded-aar/com.android.support/support-v4/20.0.0/classes.jar"
-        jumboMode="false"
-        revision="21.1.1"
+        revision="21.0.2"
         sha1="8694693636ab36910c8100ce527c258ff3ebece0">
-        <dex dex="/Users/Gantz/Desktop/DoApps/Wallpapers/Wallpapers/app/build/intermediates/pre-dexed/debug/classes-12440d5549a2147868cec7b235d6363567058100.jar" />
+        <dex dex="D:\CAPACITACION_2014\ANDROID\Wallpapers\app\build\intermediates\pre-dexed\debug\classes-36a285773646b658baf60d9131e85518d234a793.jar" />
+    </item>
+    <item
+        jar="D:\CAPACITACION_2014\ANDROID\Wallpapers\app\build\intermediates\exploded-aar\com.actionbarsherlock\actionbarsherlock\4.4.0\classes.jar"
+        jumboMode="false"
+        revision="21.0.2"
+        sha1="af64527b748983a75de9c0756e9768b56b240a49">
+        <dex dex="D:\CAPACITACION_2014\ANDROID\Wallpapers\app\build\intermediates\pre-dexed\debug\classes-24b3b3a63f1060fec5f314c46fe308587e028c97.jar" />
+    </item>
+    <item
+        jar="C:\Users\jonathan\.gradle\caches\modules-2\files-2.1\com.squareup.picasso\picasso\2.3.2\d6b7f0093cec6c9faf65dbfd6a6a345d0ed25e27\picasso-2.3.2.jar"
+        jumboMode="false"
+        revision="21.0.2"
+        sha1="d6b7f0093cec6c9faf65dbfd6a6a345d0ed25e27">
+        <dex dex="D:\CAPACITACION_2014\ANDROID\Wallpapers\app\build\intermediates\pre-dexed\debug\picasso-2.3.2-c9ca4faa74cd04a7de60170ca1fff84a7affb8a5.jar" />
+    </item>
+    <item
+        jar="D:\CAPACITACION_2014\ANDROID\Wallpapers\app\build\intermediates\exploded-aar\com.android.support\support-v4\20.0.0\libs\internal_impl-20.0.0.jar"
+        jumboMode="false"
+        revision="21.0.2"
+        sha1="e40b3078e3fbd353c9f44da8df25a8fc0078209d">
+        <dex dex="D:\CAPACITACION_2014\ANDROID\Wallpapers\app\build\intermediates\pre-dexed\debug\internal_impl-20.0.0-17257bad24885157f52fd51e095616580f404f2d.jar" />
+    </item>
+    <item
+        jar="D:\CAPACITACION_2014\ANDROID_TOOLS\adt-bundle-windows-x86-20140702\sdk\extras\android\m2repository\com\android\support\support-annotations\20.0.0\support-annotations-20.0.0.jar"
+        jumboMode="false"
+        revision="21.0.2"
+        sha1="9d9013e9ff35fc3756411e62873c363c70c638fa">
+        <dex dex="D:\CAPACITACION_2014\ANDROID\Wallpapers\app\build\intermediates\pre-dexed\debug\support-annotations-20.0.0-73f4d2e8168506515deccb88f2f1b2958636c439.jar" />
     </item>
 
 </items>

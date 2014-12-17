@@ -27,6 +27,8 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -35,13 +37,16 @@ import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.example.adapter.OverflowAdapter;
 import com.example.favorite.DatabaseHandler;
 import com.example.favorite.DatabaseHandler.DatabaseManager;
 import com.example.favorite.Pojo;
 import com.example.imageloader.ImageLoader;
+import com.example.item.ItemOption;
 import com.example.util.Constant;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
+import com.jakkash.hdwallpaper.AboutActivity;
 import com.jakkash.hdwallpaper.MainActivity;
 import com.jakkash.hdwallpaper.R;
 import com.squareup.picasso.Picasso;
@@ -50,9 +55,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
-public class Slide_Image_Fragment_v2 extends SherlockFragment implements SensorEventListener, Master.I_Load_Images {
+public class Slide_Image_Fragment_v2 extends SherlockFragment implements SensorEventListener, Master.I_Load_Images, View.OnClickListener {
 
     int position;
     String[] mAllImages, mAllImageCatName;
@@ -74,10 +80,15 @@ public class Slide_Image_Fragment_v2 extends SherlockFragment implements SensorE
     String Image_catName, Image_Url;
     Bitmap bgr;
 
-    /**
-     *
-     * @param savedInstanceState
-     */
+    /****/
+    private LinearLayout ic_home;
+    private ImageView ic_menu_back;
+    private ImageView ic_menu_play;
+    private ImageView ic_menu_next;
+    private ImageView ic_menu_fav;
+    private ImageView ic_overflow;
+    private ArrayList<ItemOption> itemOptions;
+
     private InterstitialAd interstitial;
 
     @Override
@@ -93,6 +104,8 @@ public class Slide_Image_Fragment_v2 extends SherlockFragment implements SensorE
         interstitial.setAdUnitId(getString(R.string.admob_interstitial));
         AdRequest adRequest = new AdRequest.Builder().build();
         interstitial.loadAd(adRequest);
+
+
     }
 
     @Override
@@ -114,6 +127,29 @@ public class Slide_Image_Fragment_v2 extends SherlockFragment implements SensorE
         super.onActivityCreated(savedInstanceState);
         sensorManager = (SensorManager) getActivity().getSystemService(Activity.SENSOR_SERVICE);
         lastUpdate = System.currentTimeMillis();
+
+        /****/
+        ic_home = (LinearLayout) getView().findViewById(R.id.ic_home);
+        ic_menu_back = (ImageView) getView().findViewById(R.id.ic_menu_back);
+        ic_menu_next = (ImageView) getView().findViewById(R.id.ic_menu_next);
+        ic_menu_fav = (ImageView) getView().findViewById(R.id.ic_menu_fav);
+        ic_overflow = (ImageView) getView().findViewById(R.id.ic_overflow);
+
+        ic_home.setOnClickListener(this);
+        ic_menu_back.setOnClickListener(this);
+        ic_menu_next.setOnClickListener(this);
+        ic_menu_fav.setOnClickListener(this);
+        ic_overflow.setOnClickListener(this);
+
+        itemOptions = new ArrayList<ItemOption>();
+        itemOptions.add(new ItemOption("Compartir", R.drawable.share, 1));
+        itemOptions.add(new ItemOption("Fondo pantalla", R.drawable.set, 2));
+        itemOptions.add(new ItemOption("Guardar", R.drawable.save, 3));
+        itemOptions.add(new ItemOption("Puntuar", R.drawable.rate, 4));
+        itemOptions.add(new ItemOption("Acerca de", R.drawable.about, 5));
+        itemOptions.add(new ItemOption("Más Apps", R.drawable.more, 6));
+        /****/
+
     }
 
 
@@ -231,7 +267,8 @@ public class Slide_Image_Fragment_v2 extends SherlockFragment implements SensorE
 
         db.AddtoFavorite(new Pojo(Image_catName, Image_Url));
         Toast.makeText(getActivity(), "Added to Favorite", Toast.LENGTH_SHORT).show();
-        menu.getItem(3).setIcon(getResources().getDrawable(R.drawable.fav_hover));
+        //menu.getItem(3).setIcon(getResources().getDrawable(R.drawable.fav_hover));
+        ic_menu_fav.setImageResource(R.drawable.fav_hover);
     }
 
     //remove from favorite
@@ -239,7 +276,8 @@ public class Slide_Image_Fragment_v2 extends SherlockFragment implements SensorE
         Image_Url = mAllImages[position];
         db.RemoveFav(new Pojo(Image_Url));
         Toast.makeText(getActivity(), "Removed from Favorite", Toast.LENGTH_SHORT).show();
-        menu.getItem(3).setIcon(getResources().getDrawable(R.drawable.fav));
+        //menu.getItem(3).setIcon(getResources().getDrawable(R.drawable.fav));
+        ic_menu_fav.setImageResource(R.drawable.fav);
 
     }
 
@@ -422,7 +460,7 @@ public class Slide_Image_Fragment_v2 extends SherlockFragment implements SensorE
             @Override
             public void run() {
                 AutoPlay();
-                // TODO Auto-generated method stub
+
                 position = viewpager.getCurrentItem();
                 position++;
                 if (position == TOTAL_IMAGE) {
@@ -463,15 +501,102 @@ public class Slide_Image_Fragment_v2 extends SherlockFragment implements SensorE
         List<Pojo> pojolist = db.getFavRow(Image_id);
         if (pojolist.size() == 0) {
             menu.getItem(3).setIcon(getResources().getDrawable(R.drawable.fav));
+            ic_menu_fav.setImageResource(R.drawable.fav);
 
         } else {
             if (pojolist.get(0).getImageurl().equals(Image_id)) {
                 menu.getItem(3).setIcon(getResources().getDrawable(R.drawable.fav_hover));
-
+                ic_menu_fav.setImageResource(R.drawable.fav_hover);
             }
-
         }
     }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.ic_home:
+                break;
+            case R.id.ic_menu_back:
+                position = viewpager.getCurrentItem();
+                position--;
+                if (position < 0) {
+                    position = 0;
+                }
+                viewpager.setCurrentItem(position);
+                break;
+            case R.id.ic_menu_next:
+                position = viewpager.getCurrentItem();
+                position++;
+                if (position == TOTAL_IMAGE) {
+                    position = TOTAL_IMAGE;
+                }
+                viewpager.setCurrentItem(position);
+                break;
+            case R.id.ic_menu_fav:
+                position = viewpager.getCurrentItem();
+                Image_Url = mAllImages[position];
+                List<Pojo> pojolist = db.getFavRow(Image_Url);
+                if (pojolist.size() == 0) {
+                    AddtoFav(position);//if size is zero i.e means that record not in database show add to favorite
+                } else {
+                    if (pojolist.get(0).getImageurl().equals(Image_Url)) {
+                        RemoveFav(position);
+                    }
+                }
+                break;
+            case R.id.ic_overflow:
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setAdapter(new OverflowAdapter(itemOptions, getActivity()), onClickListener);
+                builder.create();
+                builder.show();
+            default:
+                break;
+        }
+    }
+
+    DialogInterface.OnClickListener onClickListener = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            ListView listView = ((AlertDialog) dialog).getListView();
+            int id = ((ItemOption) listView.getAdapter().getItem(which)).getId();
+            dialog.dismiss();
+            switch (id) {
+                case 1:
+                    Share();
+                    break;
+                case 2:
+                    SetAsWallpaper();
+                    break;
+                case 3:
+                    save();
+                    break;
+                case 4:
+                    final String appName = "com.jakkash.apksaver";//your application package name i.e play store application url
+                    try {
+                        startActivity(new Intent(Intent.ACTION_VIEW,
+                                Uri.parse("market://details?id="
+                                        + appName)));
+                    } catch (android.content.ActivityNotFoundException anfe) {
+                        startActivity(new Intent(
+                                Intent.ACTION_VIEW,
+                                Uri.parse("http://play.google.com/store/apps/details?id="
+                                        + appName)));
+                    }
+                    break;
+                case 5:
+                    Intent about = new Intent(getActivity(), AboutActivity.class);
+                    startActivity(about);
+                    break;
+                case 6:
+                    startActivity(new Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("https://play.google.com/store/search?q=jakkash+application")));
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
 
     private class ImagePagerAdapter extends PagerAdapter {
 
@@ -527,19 +652,14 @@ public class Slide_Image_Fragment_v2 extends SherlockFragment implements SensorE
 
     @Override
     public void onAccuracyChanged(Sensor arg0, int arg1) {
-        // TODO Auto-generated method stub
-
     }
 
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        // TODO Auto-generated method stub
-
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             getAccelerometer(event);
         }
-
     }
 
     private void getAccelerometer(SensorEvent event) {
@@ -558,17 +678,10 @@ public class Slide_Image_Fragment_v2 extends SherlockFragment implements SensorE
                 return;
             }
             lastUpdate = actualTime;
-//		      Toast.makeText(this, "Device was shuffed", Toast.LENGTH_SHORT)
-//		          .show();
             if (checkImage) {
-
-
                 position = viewpager.getCurrentItem();
                 viewpager.setCurrentItem(position);
-
-
             } else {
-
                 position = viewpager.getCurrentItem();
                 position++;
                 if (position == TOTAL_IMAGE) {
@@ -591,7 +704,7 @@ public class Slide_Image_Fragment_v2 extends SherlockFragment implements SensorE
         } else if (dbManager.isDatabaseClosed()) {
             dbManager.init(getActivity());
         }
-        sensorManager.registerListener(this,sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
                 SensorManager.SENSOR_DELAY_NORMAL);
     }
 
@@ -638,19 +751,20 @@ public class Slide_Image_Fragment_v2 extends SherlockFragment implements SensorE
             viewpager.setOnPageChangeListener(new OnPageChangeListener() {
                 @Override
                 public void onPageSelected(int position) {
-                    /*
                     position = viewpager.getCurrentItem();
                     Image_Url = mAllImages[position];
 
                     List<Pojo> pojolist = db.getFavRow(Image_Url);
                     if (pojolist.size() == 0) {
-                        menu.getItem(3).setIcon(getResources().getDrawable(R.drawable.fav));
+                        ic_menu_fav.setImageResource(R.drawable.fav);
+                        //menu.getItem(3).setIcon(getResources().getDrawable(R.drawable.fav));
+
                     } else {
                         if (pojolist.get(0).getImageurl().equals(Image_Url)) {
-                            menu.getItem(3).setIcon(getResources().getDrawable(R.drawable.fav_hover));
+                            ic_menu_fav.setImageResource(R.drawable.fav_hover);
+                            //menu.getItem(3).setIcon(getResources().getDrawable(R.drawable.fav_hover));
                         }
                     }
-                    */
                 }
 
                 @Override
@@ -659,22 +773,22 @@ public class Slide_Image_Fragment_v2 extends SherlockFragment implements SensorE
                     /**
                      * Solo 30 Imagenes y luego no vuelve a cargar
                      */
-                    if(position == 30){
+                    /*if (position == 30) {
                         if (interstitial.isLoaded()) {
                             interstitial.show();
                         }
-                    }
+                    }*/
 
 
                     /**
                      * Cada 30 - 60 - 90 - 120 Imagenes
                      */
-                    if(position == 30 || position == 60 || position == 120 || position == 240){
+                    if (position == 30 || position == 60 || position == 120 || position == 240) {
                         if (interstitial.isLoaded()) {
                             interstitial.show();
                         }
-                    }else{
-                        if(!interstitial.isLoaded()){
+                    } else {
+                        if (!interstitial.isLoaded()) {
                             AdRequest adRequest = new AdRequest.Builder().build();
                             interstitial.loadAd(adRequest);
                         }

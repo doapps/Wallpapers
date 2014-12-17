@@ -32,7 +32,7 @@ import java.io.File;
 
 public class MainActivity extends Master implements ActionBar.TabListener {
 
-    private String[] tabs = {"ULTIMOS", "TODOS", "FAVORITOS"};
+    private String[] tabs = {"ULTIMOS", "CATEGORÍAS", "FAVORITOS"};
     private TabsPagerAdapter mAdapter;
     private ViewPager viewPager;
     ActionBar.Tab tab;
@@ -100,12 +100,12 @@ public class MainActivity extends Master implements ActionBar.TabListener {
         interstitial.loadAd(adRequest);
 
 
-        Handler handler = new Handler();
+        /*Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             public void run() {
                 interstitial.show();
             }
-        }, 60000);
+        }, 60000);*/
 
     }
 

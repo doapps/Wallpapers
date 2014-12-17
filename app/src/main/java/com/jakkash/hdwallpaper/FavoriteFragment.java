@@ -42,6 +42,7 @@ public class FavoriteFragment extends Fragment implements View.OnClickListener {
     /****/
     private ImageView ic_menu_rate;
     private ImageView ic_menu_about;
+    private ImageView ic_menu_more;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -51,8 +52,10 @@ public class FavoriteFragment extends Fragment implements View.OnClickListener {
 
         ic_menu_rate = (ImageView)rootView.findViewById(R.id.ic_menu_rate);
         ic_menu_about = (ImageView)rootView.findViewById(R.id.ic_menu_about);
+        ic_menu_more = (ImageView) rootView.findViewById(R.id.ic_menu_more);
         ic_menu_rate.setOnClickListener(this);
         ic_menu_about.setOnClickListener(this);
+        ic_menu_more.setOnClickListener(this);
 		
 		//Log.e("View", "called");
 		grid_fav=(GridView)rootView.findViewById(R.id.favorite_grid);
@@ -191,6 +194,11 @@ public class FavoriteFragment extends Fragment implements View.OnClickListener {
             case R.id.ic_menu_about:
                 Intent about = new Intent(getActivity(), AboutActivity.class);
                 startActivity(about);
+                break;
+            case R.id.ic_menu_more:
+                startActivity(new Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("https://play.google.com/store/search?q=jakkash+application")));
                 break;
             default:
                 break;

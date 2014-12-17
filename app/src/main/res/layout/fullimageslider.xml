@@ -1,7 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:ads="http://schemas.android.com/apk/res-auto"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <android.support.v4.view.ViewPager
         android:id="@+id/image_slider"
@@ -26,6 +26,7 @@
             android:id="@+id/ic_home"
             android:layout_width="60dp"
             android:layout_height="match_parent"
+            style="?android:borderlessButtonStyle"
             android:orientation="horizontal">
 
             <ImageView
@@ -43,38 +44,37 @@
 
         <ImageView
             android:id="@+id/ic_menu_back"
-            android:layout_weight="1"
-            android:layout_width="wrap_content"
+            android:layout_weight="1.5"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
+            style="?android:borderlessButtonStyle"
             android:src="@drawable/prev" />
 
-        <ImageView
-            android:id="@+id/ic_menu_play"
-            android:layout_weight="1"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:src="@drawable/play" />
-
-        <ImageView
-            android:id="@+id/ic_menu_next"
-            android:layout_weight="1"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:src="@drawable/next" />
 
         <ImageView
             android:id="@+id/ic_menu_fav"
             android:layout_weight="1"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
+            style="?android:borderlessButtonStyle"
             android:src="@drawable/fav" />
+
+
+        <ImageView
+            android:id="@+id/ic_menu_next"
+            android:layout_weight="1.5"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            style="?android:borderlessButtonStyle"
+            android:src="@drawable/next" />
 
         <ImageView
             android:id="@+id/ic_overflow"
-            android:layout_weight="1"
-            android:layout_width="wrap_content"
+            android:layout_weight="0.6"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_gravity="left"
+            style="?android:borderlessButtonStyle"
             android:src="@drawable/abs__ic_menu_moreoverflow_holo_dark" />
     </LinearLayout>
 
@@ -82,6 +82,7 @@
         android:id="@+id/adView"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
+        android:layout_marginTop="5dp"
         ads:adUnitId="@string/admob_id"
         android:layout_alignParentBottom="true"
         android:layout_gravity="center"

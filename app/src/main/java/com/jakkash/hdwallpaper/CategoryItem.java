@@ -74,17 +74,12 @@ public class CategoryItem extends SherlockActivity {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position,
 					long arg3) {
-				// TODO Auto-generated method stub
-				
-				
 				Intent intslider=new Intent(getApplicationContext(),SlideImageActivity.class);
 				intslider.putExtra("POSITION_ID", position);
 				intslider.putExtra("IMAGE_ARRAY", allArrayImage);
  				intslider.putExtra("IMAGE_CATNAME", allArrayImageCatName);
 	
 				startActivity(intslider);
-				
-				 
 			}
 		});
 		

@@ -51,6 +51,7 @@ import com.example.item.ItemOption;
 import com.example.util.Constant;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
 
 public class SlideImageActivity extends SherlockActivity implements SensorEventListener, View.OnClickListener {
 
@@ -82,6 +83,8 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
     private ImageView ic_menu_fav;
     private ImageView ic_overflow;
     private ArrayList<ItemOption> itemOptions;
+    private InterstitialAd interstitial;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -98,16 +101,14 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
         setTitle(Constant.CATEGORY_TITLE);
 
         /****/
-        ic_home = (LinearLayout)findViewById(R.id.ic_home);
-        ic_menu_back = (ImageView)findViewById(R.id.ic_menu_back);
-        ic_menu_play = (ImageView)findViewById(R.id.ic_menu_play);
-        ic_menu_next = (ImageView)findViewById(R.id.ic_menu_next);
-        ic_menu_fav = (ImageView)findViewById(R.id.ic_menu_fav);
-        ic_overflow = (ImageView)findViewById(R.id.ic_overflow);
+        ic_home = (LinearLayout) findViewById(R.id.ic_home);
+        ic_menu_back = (ImageView) findViewById(R.id.ic_menu_back);
+        ic_menu_next = (ImageView) findViewById(R.id.ic_menu_next);
+        ic_menu_fav = (ImageView) findViewById(R.id.ic_menu_fav);
+        ic_overflow = (ImageView) findViewById(R.id.ic_overflow);
 
         ic_home.setOnClickListener(this);
         ic_menu_back.setOnClickListener(this);
-        ic_menu_play.setOnClickListener(this);
         ic_menu_next.setOnClickListener(this);
         ic_menu_fav.setOnClickListener(this);
         ic_overflow.setOnClickListener(this);
@@ -118,11 +119,20 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
         itemOptions.add(new ItemOption("Guardar", R.drawable.save, 3));
         itemOptions.add(new ItemOption("Puntuar", R.drawable.rate, 4));
         itemOptions.add(new ItemOption("Acerca de", R.drawable.about, 5));
+        itemOptions.add(new ItemOption("Más Apps", R.drawable.more, 6));
+
+        /**
+         * Admob
+         */
+        interstitial = new InterstitialAd(this);
+        interstitial.setAdUnitId(getString(R.string.admob_interstitial));
+        AdRequest adRequest = new AdRequest.Builder().build();
+        interstitial.loadAd(adRequest);
         /****/
 
 
-        AdView adView = (AdView)findViewById(R.id.adView);
-        AdRequest adRequestb= new AdRequest.Builder().build();
+        AdView adView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequestb = new AdRequest.Builder().build();
         adView.loadAd(adRequestb);
 
         Intent i = getIntent();
@@ -145,26 +155,53 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
         viewpager.setOnPageChangeListener(new OnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
+
                 position = viewpager.getCurrentItem();
                 Image_Url = mAllImages[position];
 
                 List<Pojo> pojolist = db.getFavRow(Image_Url);
                 if (pojolist.size() == 0) {
-                    menu.getItem(3).setIcon(getResources().getDrawable(R.drawable.fav));
+                    ic_menu_fav.setImageResource(R.drawable.fav);
+                    //menu.getItem(3).setIcon(getResources().getDrawable(R.drawable.fav));
+
                 } else {
                     if (pojolist.get(0).getImageurl().equals(Image_Url)) {
-                        menu.getItem(3).setIcon(getResources().getDrawable(R.drawable.fav_hover));
+                        ic_menu_fav.setImageResource(R.drawable.fav_hover);
+                        //menu.getItem(3).setIcon(getResources().getDrawable(R.drawable.fav_hover));
                     }
-
                 }
             }
 
             @Override
-            public void onPageScrolled(int arg0, float arg1, int position) {
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                /**
+                * Solo 30 Imagenes y luego no vuelve a cargar
+                */
+                    /*if (position == 30) {
+                        if (interstitial.isLoaded()) {
+                            interstitial.show();
+                        }
+                    }*/
+
+
+                /**
+                 * Cada 30 - 60 - 90 - 120 Imagenes
+                 */
+                if (position == 30 || position == 60 || position == 120 || position == 240) {
+                    if (interstitial.isLoaded()) {
+                        interstitial.show();
+                    }
+                } else {
+                    if (!interstitial.isLoaded()) {
+                        AdRequest adRequest = new AdRequest.Builder().build();
+                        interstitial.loadAd(adRequest);
+                    }
+                }
             }
 
             @Override
-            public void onPageScrollStateChanged(int position) {
+            public void onPageScrollStateChanged(int state) {
+
             }
         });
     }
@@ -188,7 +225,6 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
                 return true;
 
             case R.id.menu_back:
-
                 position = viewpager.getCurrentItem();
                 position--;
                 if (position < 0) {
@@ -212,7 +248,7 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
                     ShowMenu();
                 } else {
                 /*
-        		 * when Play_Flag false then Play
+                 * when Play_Flag false then Play
         		 * but when image is last not start auto play
         		 * now hide all menu when auto play start
         		 */
@@ -258,7 +294,7 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.ic_home:
                 startActivity(new Intent(this, MainActivity.class));
                 finish();
@@ -279,21 +315,6 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
                 }
                 viewpager.setCurrentItem(position);
                 break;
-            case R.id.ic_menu_play:
-                if (Play_Flag) {
-                    handler.removeCallbacks(Update);
-                    Play_Flag = false;
-                    ShowMenu();
-                } else {
-                    if (viewpager.getCurrentItem() == TOTAL_IMAGE) {
-                        Toast.makeText(getApplicationContext(), "Currently Last Image!! Not Start Auto Play", Toast.LENGTH_SHORT).show();
-                    } else {
-                        AutoPlay();
-                        Play_Flag = true;
-                        HideMenu();
-                    }
-                }
-                break;
             case R.id.ic_menu_fav:
                 position = viewpager.getCurrentItem();
                 Image_Url = mAllImages[position];
@@ -311,7 +332,8 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
                 builder.setAdapter(new OverflowAdapter(itemOptions, this), onClickListener);
                 builder.create();
                 builder.show();
-            default:break;
+            default:
+                break;
         }
     }
 
@@ -319,10 +341,10 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
     DialogInterface.OnClickListener onClickListener = new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which) {
-            ListView listView = ((AlertDialog)dialog).getListView();
-            int id = ((ItemOption)listView.getAdapter().getItem(which)).getId();
+            ListView listView = ((AlertDialog) dialog).getListView();
+            int id = ((ItemOption) listView.getAdapter().getItem(which)).getId();
             dialog.dismiss();
-            switch (id){
+            switch (id) {
                 case 1:
                     Share();
                     break;
@@ -349,10 +371,14 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
                     Intent about = new Intent(SlideImageActivity.this, AboutActivity.class);
                     startActivity(about);
                     break;
-                default:break;
+                case 6:
+                    startActivity(new Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("https://play.google.com/store/search?q=jakkash+application")));
+                    break;
+                default:
+                    break;
             }
-
-
         }
     };
     //add to favorite
@@ -364,7 +390,8 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
 
         db.AddtoFavorite(new Pojo(Image_catName, Image_Url));
         Toast.makeText(getApplicationContext(), "Added to Favorite", Toast.LENGTH_SHORT).show();
-        menu.getItem(3).setIcon(getResources().getDrawable(R.drawable.fav_hover));
+        //menu.getItem(3).setIcon(getResources().getDrawable(R.drawable.fav_hover));
+        ic_menu_fav.setImageResource(R.drawable.fav_hover);
     }
 
     //remove from favorite
@@ -372,7 +399,8 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
         Image_Url = mAllImages[position];
         db.RemoveFav(new Pojo(Image_Url));
         Toast.makeText(getApplicationContext(), "Removed from Favorite", Toast.LENGTH_SHORT).show();
-        menu.getItem(3).setIcon(getResources().getDrawable(R.drawable.fav));
+        //menu.getItem(3).setIcon(getResources().getDrawable(R.drawable.fav));
+        ic_menu_fav.setImageResource(R.drawable.fav);
 
     }
 
@@ -602,12 +630,11 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
         } else {
             if (pojolist.get(0).getImageurl().equals(Image_id)) {
                 menu.getItem(3).setIcon(getResources().getDrawable(R.drawable.fav_hover));
-
+                ic_menu_fav.setImageResource(R.drawable.fav_hover);
             }
 
         }
     }
-
 
 
     private class ImagePagerAdapter extends PagerAdapter {
@@ -615,8 +642,6 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
         private LayoutInflater inflater;
 
         public ImagePagerAdapter() {
-            // TODO Auto-generated constructor stub
-
             inflater = getLayoutInflater();
         }
 
@@ -689,19 +714,14 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
 
     @Override
     public void onAccuracyChanged(Sensor arg0, int arg1) {
-        // TODO Auto-generated method stub
-
     }
 
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        // TODO Auto-generated method stub
-
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             getAccelerometer(event);
         }
-
     }
 
     private void getAccelerometer(SensorEvent event) {
@@ -720,15 +740,9 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
                 return;
             }
             lastUpdate = actualTime;
-//		      Toast.makeText(this, "Device was shuffed", Toast.LENGTH_SHORT)
-//		          .show();
             if (checkImage) {
-
-
                 position = viewpager.getCurrentItem();
                 viewpager.setCurrentItem(position);
-
-
             } else {
 
                 position = viewpager.getCurrentItem();
