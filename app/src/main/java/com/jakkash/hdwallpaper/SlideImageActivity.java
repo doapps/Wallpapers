@@ -25,6 +25,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -132,7 +133,6 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
         interstitial.loadAd(adRequest);
         /****/
 
-
         AdView adView = (AdView) findViewById(R.id.adView);
         AdRequest adRequestb = new AdRequest.Builder().build();
         adView.loadAd(adRequestb);
@@ -154,7 +154,8 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         lastUpdate = System.currentTimeMillis();
 
-        viewpager.setOnPageChangeListener(new OnPageChangeListener() {
+
+        viewpager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
 
@@ -184,7 +185,6 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
                             interstitial.show();
                         }
                     }*/
-
 
                 /**
                  * Cada 30 - 60 - 90 - 120 Imagenes
@@ -217,11 +217,11 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
                 Log.e("TAG", "currentPage::" + currentPage);
                 Log.e("TAG", "currentState::" + currentState);
                 Log.e("TAG", "previousState::" + previousState);
-                if (currentPage == TOTAL_IMAGE-1 || currentPage == 0) {
+                if (currentPage == TOTAL_IMAGE - 1 || currentPage == 0) {
                     previousState = currentState;
                     currentState = state;
                     if (previousState == 1 && currentState == 0) {
-                        viewpager.setCurrentItem(currentPage == 0 ? TOTAL_IMAGE-1 : 0);
+                        viewpager.setCurrentItem(currentPage == 0 ? TOTAL_IMAGE - 1 : 0);
                     }
                 }
             }
@@ -240,7 +240,7 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
                 position = viewpager.getCurrentItem();
                 position--;
                 if (position < 0) {
-                    position = 0;
+                    position = TOTAL_IMAGE-1;
                 }
                 viewpager.setCurrentItem(position);
                 break;
@@ -248,7 +248,7 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
                 position = viewpager.getCurrentItem();
                 position++;
                 if (position == TOTAL_IMAGE) {
-                    position = TOTAL_IMAGE;
+                    position = 0;
                 }
                 viewpager.setCurrentItem(position);
                 break;
@@ -318,15 +318,16 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
             }
         }
     };
+
     //add to favorite
-
     public void AddtoFav(int position) {
-
         Image_catName = mAllImageCatName[position];
         Image_Url = mAllImages[position];
 
         db.AddtoFavorite(new Pojo(Image_catName, Image_Url));
-        Toast.makeText(getApplicationContext(), "Added to Favorite", Toast.LENGTH_SHORT).show();
+        Toast toast = Toast.makeText(SlideImageActivity.this, "Added to Favorite", Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL, 0, 150);
+        toast.show();
         //menu.getItem(3).setIcon(getResources().getDrawable(R.drawable.fav_hover));
         ic_menu_fav.setImageResource(R.drawable.fav_hover);
     }
@@ -335,14 +336,14 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
     public void RemoveFav(int position) {
         Image_Url = mAllImages[position];
         db.RemoveFav(new Pojo(Image_Url));
-        Toast.makeText(getApplicationContext(), "Removed from Favorite", Toast.LENGTH_SHORT).show();
+        Toast toast = Toast.makeText(SlideImageActivity.this, "Removed from Favorite", Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL, 0, 150);
+        toast.show();
         //menu.getItem(3).setIcon(getResources().getDrawable(R.drawable.fav));
         ic_menu_fav.setImageResource(R.drawable.fav);
-
     }
 
     //for share current image of view  pager
-
     public void Share() {
         viewpager.buildDrawingCache();
         String path = Environment.getExternalStorageDirectory().toString();
@@ -400,16 +401,17 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
         try {
             myWallpaperManager.setBitmap(mBitmap);
             myWallpaperManager.suggestDesiredDimensions(width1, height);
-            Toast.makeText(SlideImageActivity.this, "Wallpaper set",
-                    Toast.LENGTH_SHORT).show();
+            Toast toast = Toast.makeText(SlideImageActivity.this, "Wallpaper set", Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL, 0, 150);
+            toast.show();
         } catch (IOException e) {
-            Toast.makeText(SlideImageActivity.this, "Error setting wallpaper",
-                    Toast.LENGTH_SHORT).show();
+            Toast toast = Toast.makeText(SlideImageActivity.this, "Error setting wallpaper", Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL, 0, 150);
+            toast.show();
         }
     }
 
     //for Save File in SdCard
-
     public void save() { // called on save menu
         Log.e("saving1", "a");
         if (this.fileName == null) {
@@ -454,7 +456,6 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
                     public void onClick(DialogInterface dialog, int whichButton) {
                     }
                 });
-
         alert.show();
     }
 
@@ -475,7 +476,6 @@ public class SlideImageActivity extends SherlockActivity implements SensorEventL
                     public void onClick(DialogInterface dialog, int whichButton) {
                     }
                 });
-
         alert.show();
     }
 

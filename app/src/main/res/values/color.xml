@@ -7,5 +7,6 @@
     <color name="gray">#d9d9d9</color>
     <color name="dark">#212121</color>
     <color name="subdark">#2e2e2e</color>
+    <color name="sky_pressed">#2e7c94</color>
     
 </resources>

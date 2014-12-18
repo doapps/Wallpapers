@@ -5,20 +5,22 @@
     android:layout_height="wrap_content"
     android:padding="10dp"
     android:gravity="center_vertical"
-    android:background="@color/subdark">
+    android:background="@drawable/selector_overflow">
+
     <ImageView
         android:id="@+id/img_option"
         android:layout_gravity="center_vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="10dp"
-        android:src="@drawable/share"/>
+        android:src="@drawable/share" />
+
     <TextView
         android:id="@+id/txt_option"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/gray"
         android:textSize="18sp"
-        android:text="@string/option_test"/>
+        android:text="@string/option_test" />
 
 </LinearLayout>

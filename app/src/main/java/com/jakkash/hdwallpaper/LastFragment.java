@@ -4,11 +4,13 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.app.WallpaperManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -68,7 +70,7 @@ import java.util.List;
 /**
  * Created by jonathan on 17/12/2014.
  */
-public class LastFragment extends Fragment implements View.OnClickListener {
+public class LastFragment extends Fragment implements SensorEventListener,View.OnClickListener {
     private int position;
     String[] mAllImages, mAllImageCatName;
 
@@ -76,7 +78,7 @@ public class LastFragment extends Fragment implements View.OnClickListener {
     ImageView vp_imageview;
     ViewPager viewpager;
     public ImageLoader imageLoader;
-    private int TOTAL_IMAGE;
+    private int TOTAL_IMAGE = 0;
     private String fileName;
     private SensorManager sensorManager;
     private boolean checkImage = false;
@@ -128,6 +130,15 @@ public class LastFragment extends Fragment implements View.OnClickListener {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        /**agregado**/
+
+        viewpager = (ViewPager) getActivity().findViewById(R.id.image_slider);
+        if (JsonUtils.isNetworkAvailable(getActivity())) {
+            new MyTask_().execute(Constant.CATEGORY_ITEM_URL + "32");
+        } else {
+            showToast("No Network Connection!!!");
+        }
+
         /****/
         ic_home = (LinearLayout) getActivity().findViewById(R.id.ic_home);
         ic_menu_back = (ImageView) getActivity().findViewById(R.id.ic_menu_back);
@@ -166,7 +177,7 @@ public class LastFragment extends Fragment implements View.OnClickListener {
 
 
 
-        viewpager = (ViewPager) getActivity().findViewById(R.id.image_slider);
+
         imageLoader = new ImageLoader(getActivity());
         handler = new Handler();
 
@@ -175,13 +186,8 @@ public class LastFragment extends Fragment implements View.OnClickListener {
         allListImage = new ArrayList<String>();
         allListImageCatName = new ArrayList<String>();
 
-        /**agregado**/
-        if (JsonUtils.isNetworkAvailable(getActivity())) {
-            new MyTask_().execute(Constant.CATEGORY_ITEM_URL + "31");
-        } else {
-            showToast("No Network Connection!!!");
-        }
 
+        sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
         lastUpdate = System.currentTimeMillis();
 
         viewpager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -268,7 +274,7 @@ public class LastFragment extends Fragment implements View.OnClickListener {
                 position = viewpager.getCurrentItem();
                 position--;
                 if (position < 0) {
-                    position = 0;
+                    position = TOTAL_IMAGE-1;
                 }
                 viewpager.setCurrentItem(position);
                 break;
@@ -276,7 +282,7 @@ public class LastFragment extends Fragment implements View.OnClickListener {
                 position = viewpager.getCurrentItem();
                 position++;
                 if (position == TOTAL_IMAGE) {
-                    position = TOTAL_IMAGE;
+                    position = 0;
                 }
                 viewpager.setCurrentItem(position);
                 break;
@@ -432,8 +438,9 @@ public class LastFragment extends Fragment implements View.OnClickListener {
         try {
             myWallpaperManager.setBitmap(mBitmap);
             myWallpaperManager.suggestDesiredDimensions(width1, height);
-            Toast.makeText(getActivity(), "Wallpaper set",
-                    Toast.LENGTH_SHORT).show();
+            Toast toast = Toast.makeText(getActivity(), "Wallpaper set", Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL, 0, 150);
+            toast.show();
         } catch (IOException e) {
             Toast.makeText(getActivity(), "Error setting wallpaper",
                     Toast.LENGTH_SHORT).show();
@@ -604,7 +611,6 @@ public class LastFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-
     private class ImagePagerAdapter extends PagerAdapter {
 
         private LayoutInflater inflater;
@@ -669,41 +675,6 @@ public class LastFragment extends Fragment implements View.OnClickListener {
             ((ViewPager) container).removeView((View) object);
         }
     }
-
-
-
-    private void getAccelerometer(SensorEvent event) {
-        float[] values = event.values;
-        // Movement
-        float x = values[0];
-        float y = values[1];
-        float z = values[2];
-
-        float accelationSquareRoot = (x * x + y * y + z * z)
-                / (SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH);
-        long actualTime = System.currentTimeMillis();
-        if (accelationSquareRoot >= 2) //
-        {
-            if (actualTime - lastUpdate < 200) {
-                return;
-            }
-            lastUpdate = actualTime;
-            if (checkImage) {
-                position = viewpager.getCurrentItem();
-                viewpager.setCurrentItem(position);
-            } else {
-
-                position = viewpager.getCurrentItem();
-                position++;
-                if (position == TOTAL_IMAGE) {
-                    position = TOTAL_IMAGE;
-                }
-                viewpager.setCurrentItem(position);
-            }
-            checkImage = !checkImage;
-        }
-    }
-
 
     /****/
     private class MyTask_ extends AsyncTask<String, Void, String> {
@@ -793,4 +764,51 @@ public class LastFragment extends Fragment implements View.OnClickListener {
     public void showToast(String msg) {
         Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
     }
+
+/*Sensor*/
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            getAccelerometer(event);
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
+    private void getAccelerometer(SensorEvent event) {
+        float[] values = event.values;
+        // Movement
+        float x = values[0];
+        float y = values[1];
+        float z = values[2];
+
+        float accelationSquareRoot = (x * x + y * y + z * z)
+                / (SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH);
+        long actualTime = System.currentTimeMillis();
+        if (accelationSquareRoot >= 2) //
+        {
+            if (actualTime - lastUpdate < 200) {
+                return;
+            }
+            lastUpdate = actualTime;
+            if (checkImage) {
+                position = viewpager.getCurrentItem();
+                viewpager.setCurrentItem(position);
+            } else {
+
+                position = viewpager.getCurrentItem();
+                position++;
+                if (position == TOTAL_IMAGE) {
+                    position = TOTAL_IMAGE;
+                }
+                viewpager.setCurrentItem(position);
+            }
+            checkImage = !checkImage;
+        }
+    }
+
+
 }
